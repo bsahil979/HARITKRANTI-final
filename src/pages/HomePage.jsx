@@ -181,36 +181,101 @@ const HomePage = () => {
 
       <section className="py-24 bg-gradient-to-b from-white to-gray-50">
         <div className="container mx-auto px-4">
-          <h2 className="text-4xl font-bold text-center text-gray-800 mb-16">{t("browseByCategory")}</h2>
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold text-gray-800 mb-4">Fresh Produce Direct from Partnered Farmers</h2>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+              Discover our carefully curated categories of farm-fresh products, sourced directly from verified local farmers
+            </p>
+          </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
-            {categoryLoading ? (
-              <div className="col-span-full flex justify-center py-12">
-                <Loader />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+            {/* Vegetables Category */}
+            <Link
+              to="/products?category=vegetables"
+              className="group glass p-8 rounded-3xl text-center transition-all duration-300 shadow-lg hover:shadow-2xl hover:-translate-y-2 border border-emerald-100 hover:border-emerald-200"
+            >
+              <div className="w-20 h-20 bg-gradient-to-br from-emerald-100 to-green-100 rounded-full flex items-center justify-center mx-auto mb-6 shadow-md group-hover:scale-110 transition-transform duration-300">
+                <span className="text-4xl">🥬</span>
               </div>
-            ) : (categories ?? []).length === 0 ? (
-              <div className="col-span-full text-center py-12">
-                <h3 className="text-2xl font-semibold text-gray-700 mb-4">{t("categoriesComing")}</h3>
-                <p className="text-gray-500">{t("categoriesWorking")}</p>
+              <h3 className="text-2xl font-bold text-gray-800 mb-3 group-hover:text-emerald-700 transition-colors duration-300">
+                Vegetables
+              </h3>
+              <p className="text-gray-600 mb-4 text-sm">
+                Leafy greens, tomatoes, onions
+              </p>
+              <p className="text-xs text-emerald-600 mb-6 font-medium">
+                Sourced from verified local farmers
+              </p>
+              <button className="btn btn-primary px-6 py-3 text-sm font-semibold rounded-xl shadow-md hover:shadow-lg transform hover:-translate-y-1 transition-all duration-300">
+                Shop Now
+              </button>
+            </Link>
+
+            {/* Fruits Category */}
+            <Link
+              to="/products?category=fruits"
+              className="group glass p-8 rounded-3xl text-center transition-all duration-300 shadow-lg hover:shadow-2xl hover:-translate-y-2 border border-emerald-100 hover:border-emerald-200"
+            >
+              <div className="w-20 h-20 bg-gradient-to-br from-orange-100 to-red-100 rounded-full flex items-center justify-center mx-auto mb-6 shadow-md group-hover:scale-110 transition-transform duration-300">
+                <span className="text-4xl">🍎</span>
               </div>
-            ) : (
-              (categories ?? []).map((category) => (
-                <Link
-                  key={category._id}
-                  to={`/products?category=${category._id}`}
-                  className="glass p-6 rounded-2xl text-center transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-1"
-                >
-                  <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <span className="text-green-600 text-2xl font-bold">
-                      {category.icon}
-                    </span>
-                  </div>
-                  <h3 className="font-semibold text-base text-gray-700">
-                    {category.name}
-                  </h3>
-                </Link>
-              ))
-            )}
+              <h3 className="text-2xl font-bold text-gray-800 mb-3 group-hover:text-emerald-700 transition-colors duration-300">
+                Fruits
+              </h3>
+              <p className="text-gray-600 mb-4 text-sm">
+                Mangoes, bananas, papayas
+              </p>
+              <p className="text-xs text-emerald-600 mb-6 font-medium">
+                Sourced from verified local farmers
+              </p>
+              <button className="btn btn-primary px-6 py-3 text-sm font-semibold rounded-xl shadow-md hover:shadow-lg transform hover:-translate-y-1 transition-all duration-300">
+                Shop Now
+              </button>
+            </Link>
+
+            {/* Grains & Cereals Category */}
+            <Link
+              to="/products?category=grains"
+              className="group glass p-8 rounded-3xl text-center transition-all duration-300 shadow-lg hover:shadow-2xl hover:-translate-y-2 border border-emerald-100 hover:border-emerald-200"
+            >
+              <div className="w-20 h-20 bg-gradient-to-br from-yellow-100 to-amber-100 rounded-full flex items-center justify-center mx-auto mb-6 shadow-md group-hover:scale-110 transition-transform duration-300">
+                <span className="text-4xl">🌾</span>
+              </div>
+              <h3 className="text-2xl font-bold text-gray-800 mb-3 group-hover:text-emerald-700 transition-colors duration-300">
+                Grains & Cereals
+              </h3>
+              <p className="text-gray-600 mb-4 text-sm">
+                Rice, wheat, jowar, bajra
+              </p>
+              <p className="text-xs text-emerald-600 mb-6 font-medium">
+                Sourced from verified local farmers
+              </p>
+              <button className="btn btn-primary px-6 py-3 text-sm font-semibold rounded-xl shadow-md hover:shadow-lg transform hover:-translate-y-1 transition-all duration-300">
+                Shop Now
+              </button>
+            </Link>
+
+            {/* Pulses & Legumes Category */}
+            <Link
+              to="/products?category=pulses"
+              className="group glass p-8 rounded-3xl text-center transition-all duration-300 shadow-lg hover:shadow-2xl hover:-translate-y-2 border border-emerald-100 hover:border-emerald-200"
+            >
+              <div className="w-20 h-20 bg-gradient-to-br from-purple-100 to-indigo-100 rounded-full flex items-center justify-center mx-auto mb-6 shadow-md group-hover:scale-110 transition-transform duration-300">
+                <span className="text-4xl">🧅</span>
+              </div>
+              <h3 className="text-2xl font-bold text-gray-800 mb-3 group-hover:text-emerald-700 transition-colors duration-300">
+                Pulses & Legumes
+              </h3>
+              <p className="text-gray-600 mb-4 text-sm">
+                Moong, toor, chana, masoor
+              </p>
+              <p className="text-xs text-emerald-600 mb-6 font-medium">
+                Sourced from verified local farmers
+              </p>
+              <button className="btn btn-primary px-6 py-3 text-sm font-semibold rounded-xl shadow-md hover:shadow-lg transform hover:-translate-y-1 transition-all duration-300">
+                Shop Now
+              </button>
+            </Link>
           </div>
         </div>
       </section>
@@ -225,16 +290,6 @@ const HomePage = () => {
             >
               {t("viewAllFarmers")}
             </Link>
-          </div>
-          <div className="text-center mb-12">
-            <p className="text-lg text-gray-600">{t("meetSomeFarmers")}</p>
-            <ul className="mt-4 text-gray-700">
-              <li>Ram Lal - Uttar Pradesh</li>
-              <li>Priya Sharma - Maharashtra</li>
-              <li>Suresh Kumar - Punjab</li>
-              <li>Anjali Devi - Bihar</li>
-              <li>Mohan Singh - Rajasthan</li>
-            </ul>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">

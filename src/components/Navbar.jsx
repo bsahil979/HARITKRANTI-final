@@ -73,9 +73,24 @@ const Navbar = () => {
               {t("about")}
             </Link>
 
-            <div className="flex items-center gap-2">
-              <button onClick={() => setLang("en")} className={`px-3 py-1 rounded ${lang === "en" ? "bg-emerald-600 text-white" : "bg-gray-100"}`}>EN</button>
-              <button onClick={() => setLang("hi")} className={`px-3 py-1 rounded ${lang === "hi" ? "bg-emerald-600 text-white" : "bg-gray-100"}`}>हिंदी</button>
+            <div className="relative">
+              <select
+                value={lang}
+                onChange={(e) => setLang(e.target.value)}
+                className="px-2 py-1 text-sm rounded-md bg-gray-100 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                aria-label="Select language"
+              >
+                <option value="en">English</option>
+                <option value="hi">हिंदी</option>
+                <option value="mr">मराठी</option>
+                <option value="te">తెలుగు</option>
+                <option value="ta">தமிழ்</option>
+                <option value="kn">ಕನ್ನಡ</option>
+                <option value="gu">ગુજરાતી</option>
+                <option value="bn">বাংলা</option>
+                <option value="pa">ਪੰਜਾਬੀ</option>
+                <option value="or">ଓଡ଼ିଆ</option>
+              </select>
             </div>
 
             {isAuthenticated && user?.role === "consumer" && (
@@ -232,9 +247,24 @@ const Navbar = () => {
                 {t("about")}
               </Link>
 
-              <div className="flex items-center gap-2">
-                <button onClick={() => { setLang("en"); toggleMenu(); }} className={`px-3 py-1 rounded ${lang === "en" ? "bg-emerald-600 text-white" : "bg-gray-100"}`}>EN</button>
-                <button onClick={() => { setLang("hi"); toggleMenu(); }} className={`px-3 py-1 rounded ${lang === "hi" ? "bg-emerald-600 text-white" : "bg-gray-100"}`}>हिंदी</button>
+              <div className="relative">
+                <select
+                  value={lang}
+                  onChange={(e) => { setLang(e.target.value); toggleMenu(); }}
+                  className="w-full px-2 py-1 text-sm rounded-md bg-gray-100 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  aria-label="Select language"
+                >
+                  <option value="en">English</option>
+                  <option value="hi">हिंदी</option>
+                  <option value="mr">मराठी</option>
+                  <option value="te">తెలుగు</option>
+                  <option value="ta">தமிழ்</option>
+                  <option value="kn">ಕನ್ನಡ</option>
+                  <option value="gu">ગુજરાતી</option>
+                  <option value="bn">বাংলা</option>
+                  <option value="pa">ਪੰਜਾਬੀ</option>
+                  <option value="or">ଓଡ଼ିଆ</option>
+                </select>
               </div>
 
               {isAuthenticated && user?.role === "consumer" && (

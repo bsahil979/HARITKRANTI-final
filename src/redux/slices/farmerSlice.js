@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit"
 import axios from "axios"
 import { toast } from "react-toastify"
+import farmers from "../../data/Farmers"
 
 const API_URL = import.meta.env.VITE_API_URL
 
@@ -10,8 +11,9 @@ export const getAllFarmers = createAsyncThunk("farmers/getAllFarmers", async (_,
     const { data } = await axios.get(`${API_URL}/users/farmers`)
     return data
   } catch (error) {
-    const message = error.response && error.response.data.message ? error.response.data.message : error.message
-    return rejectWithValue(message)
+    // Fallback to sample data if API is not available
+    console.log("Using sample farmer data")
+    return { data: farmers }
   }
 })
 
@@ -21,6 +23,12 @@ export const getFarmerProfile = createAsyncThunk("farmers/getFarmerProfile", asy
     const { data } = await axios.get(`${API_URL}/users/farmers/${id}`)
     return data
   } catch (error) {
+    // Fallback to sample data if API is not available
+    console.log("Using sample farmer profile data")
+    const farmer = farmers.find(f => f._id === id)
+    if (farmer) {
+      return { data: { farmer, profile: farmer.profile } }
+    }
     const message = error.response && error.response.data.message ? error.response.data.message : error.message
     return rejectWithValue(message)
   }

@@ -51,8 +51,14 @@ const FarmerDetailPage = () => {
   );
   const { isAuthenticated, user } = useSelector((state) => state.auth);
 
+  // Debug logging
+  console.log("FarmerDetailPage - Products:", products);
+  console.log("FarmerDetailPage - Farmer ID:", id);
+
   useEffect(() => {
+    console.log("Fetching farmer profile for ID:", id);
     dispatch(getFarmerProfile(id));
+    console.log("Fetching products for farmer ID:", id);
     dispatch(getProducts({ farmer: id }));
 
     return () => {

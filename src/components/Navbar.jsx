@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { logout } from "../redux/slices/authSlice";
 import { useI18n } from "../context/I18nProvider";
@@ -17,13 +17,27 @@ import {
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const { isAuthenticated, user } = useSelector((state) => state.auth);
   const { cartItems } = useSelector((state) => state.cart);
   const { t, lang, setLang } = useI18n();
+
+  const isHomePage = location.pathname === "/";
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollTop = window.scrollY;
+      setIsScrolled(scrollTop > 100); // Change background after scrolling 100px
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -39,36 +53,36 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="bg-white shadow-md sticky top-0 z-50">
+    <nav className={`${isHomePage ? (isScrolled ? 'bg-white/10 backdrop-blur-md shadow-md fixed top-0 z-50 w-full rounded-b-3xl' : 'bg-transparent backdrop-blur-md fixed top-0 z-50 w-full rounded-b-3xl') : 'bg-white/10 backdrop-blur-md shadow-md sticky top-0 z-50 rounded-b-3xl'}`}>
       <div className="container mx-auto px-4 py-3">
         <div className="flex justify-between items-center">
           <Link to="/" className="flex items-center space-x-2">
-            <FaSeedling className="text-emerald-600 text-2xl" />
-            <span className="text-xl font-bold text-emerald-700">HaritKranti</span>
+            <FaSeedling className={`${isHomePage && !isScrolled ? 'text-emerald-400' : 'text-emerald-600'} text-2xl`} />
+            <span className={`text-xl font-bold ${isHomePage && !isScrolled ? 'text-white' : 'text-emerald-800'}`}>HaritKranti</span>
           </Link>
 
           <div className="hidden md:flex items-center space-x-6">
             <Link
               to="/"
-              className="text-gray-700 hover:text-emerald-600 transition-colors font-medium"
+              className={`${isHomePage && !isScrolled ? 'text-white hover:text-emerald-300' : 'text-gray-700 hover:text-emerald-600'} transition-colors font-medium`}
             >
               {t("home")}
             </Link>
             <Link
-              to="/products"
-              className="text-gray-700 hover:text-emerald-600 transition-colors font-medium"
+              to="/marketplace"
+              className={`${isHomePage && !isScrolled ? 'text-white hover:text-emerald-300' : 'text-gray-700 hover:text-emerald-600'} transition-colors font-medium`}
             >
-              {t("products")}
+              Direct Marketplace
             </Link>
             <Link
               to="/farmers"
-              className="text-gray-700 hover:text-emerald-600 transition-colors font-medium"
+              className={`${isHomePage && !isScrolled ? 'text-white hover:text-emerald-300' : 'text-gray-700 hover:text-emerald-600'} transition-colors font-medium`}
             >
               {t("farmers")}
             </Link>
             <Link
               to="/about"
-              className="text-gray-700 hover:text-emerald-600 transition-colors font-medium"
+              className={`${isHomePage && !isScrolled ? 'text-white hover:text-emerald-300' : 'text-gray-700 hover:text-emerald-600'} transition-colors font-medium`}
             >
               {t("about")}
             </Link>
@@ -77,7 +91,7 @@ const Navbar = () => {
               <select
                 value={lang}
                 onChange={(e) => setLang(e.target.value)}
-                className="px-2 py-1 text-sm rounded-md bg-gray-100 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                className={`px-2 py-1 text-sm rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500 ${isHomePage && !isScrolled ? 'bg-white/20 text-white border-white/30' : 'bg-gray-100 text-gray-700'}`}
                 aria-label="Select language"
               >
                 <option value="en">English</option>
@@ -94,8 +108,8 @@ const Navbar = () => {
             </div>
 
             {isAuthenticated && user?.role === "consumer" && (
-            <Link to="/checkout" className="relative">
-                <FaShoppingCart className="text-gray-700 hover:text-emerald-600 text-xl transition-colors" />
+            <Link to="/cart" className="relative">
+                <FaShoppingCart className={`${isHomePage && !isScrolled ? 'text-white hover:text-emerald-300' : 'text-gray-700 hover:text-emerald-600'} text-xl transition-colors`} />
                 {cartItems.length > 0 && (
                   <span className="absolute -top-2 -right-2 bg-emerald-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
                     {cartItems.length}
@@ -108,7 +122,7 @@ const Navbar = () => {
               <div className="relative">
                 <button
                   onClick={toggleProfile}
-                  className="flex items-center space-x-2 text-gray-700 hover:text-emerald-600 transition-colors focus:outline-none"
+                  className={`flex items-center space-x-2 ${isHomePage && !isScrolled ? 'text-white hover:text-emerald-300' : 'text-gray-700 hover:text-emerald-600'} transition-colors focus:outline-none`}
                 >
                   <FaUser className="text-xl" />
                   <span className="font-medium">
@@ -185,13 +199,13 @@ const Navbar = () => {
               <div className="flex items-center space-x-4">
                 <Link
                   to="/login"
-                  className="text-gray-700 hover:text-emerald-600 transition-colors font-medium"
+                  className={`${isHomePage && !isScrolled ? 'text-white hover:text-emerald-300' : 'text-gray-700 hover:text-emerald-600'} transition-colors font-medium`}
                 >
                   {t("login")}
                 </Link>
                 <Link
                   to="/register"
-                  className="bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700 transition-colors shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                  className="bg-emerald-600 text-white hover:bg-emerald-700 px-4 py-2 rounded-lg transition-colors shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
                 >
                   {t("register")}
                 </Link>
@@ -203,7 +217,7 @@ const Navbar = () => {
           <div className="md:hidden">
             <button
               onClick={toggleMenu}
-              className="text-gray-700 hover:text-green-500 focus:outline-none"
+              className={`${isHomePage && !isScrolled ? 'text-white hover:text-emerald-300' : 'text-gray-700 hover:text-green-500'} focus:outline-none`}
             >
               {isMenuOpen ? (
                 <FaTimes className="text-2xl" />
@@ -216,32 +230,32 @@ const Navbar = () => {
 
         {/* Mobile Menu */}
         {isMenuOpen && (
-          <div className="md:hidden mt-4 pb-4">
+          <div className={`md:hidden mt-4 pb-4 ${isHomePage ? 'bg-black/20 backdrop-blur-md rounded-lg p-4' : ''}`}>
             <div className="flex flex-col space-y-4">
               <Link
                 to="/"
-                className="text-gray-700 hover:text-emerald-600 transition-colors font-medium"
+                className={`${isHomePage ? 'text-white hover:text-emerald-300' : 'text-gray-700 hover:text-emerald-600'} transition-colors font-medium`}
                 onClick={toggleMenu}
               >
                 {t("home")}
               </Link>
               <Link
-                to="/products"
-                className="text-gray-700 hover:text-emerald-600 transition-colors font-medium"
+                to="/marketplace"
+                className={`${isHomePage ? 'text-white hover:text-emerald-300' : 'text-gray-700 hover:text-emerald-600'} transition-colors font-medium`}
                 onClick={toggleMenu}
               >
-                {t("products")}
+                Direct Marketplace
               </Link>
               <Link
                 to="/farmers"
-                className="text-gray-700 hover:text-emerald-600 transition-colors font-medium"
+                className={`${isHomePage ? 'text-white hover:text-emerald-300' : 'text-gray-700 hover:text-emerald-600'} transition-colors font-medium`}
                 onClick={toggleMenu}
               >
                 {t("farmers")}
               </Link>
               <Link
                 to="/about"
-                className="text-gray-700 hover:text-emerald-600 transition-colors font-medium"
+                className={`${isHomePage ? 'text-white hover:text-emerald-300' : 'text-gray-700 hover:text-emerald-600'} transition-colors font-medium`}
                 onClick={toggleMenu}
               >
                 {t("about")}
@@ -251,7 +265,7 @@ const Navbar = () => {
                 <select
                   value={lang}
                   onChange={(e) => { setLang(e.target.value); toggleMenu(); }}
-                  className="w-full px-2 py-1 text-sm rounded-md bg-gray-100 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  className={`w-full px-2 py-1 text-sm rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500 ${isHomePage ? 'bg-white/20 text-white border-white/30' : 'bg-gray-100 text-gray-700'}`}
                   aria-label="Select language"
                 >
                   <option value="en">English</option>
@@ -269,8 +283,8 @@ const Navbar = () => {
 
               {isAuthenticated && user?.role === "consumer" && (
                 <Link
-                  to="/checkout"
-                  className="flex items-center space-x-2 text-gray-700 hover:text-green-500 transition-colors"
+                  to="/cart"
+                  className={`flex items-center space-x-2 ${isHomePage ? 'text-white hover:text-emerald-300' : 'text-gray-700 hover:text-green-500'} transition-colors`}
                   onClick={toggleMenu}
                 >
                   <FaShoppingCart />
@@ -301,7 +315,7 @@ const Navbar = () => {
 
                   <Link
                     to="/profile"
-                    className="text-gray-700 hover:text-emerald-600 transition-colors font-medium"
+                    className={`${isHomePage ? 'text-white hover:text-emerald-300' : 'text-gray-700 hover:text-emerald-600'} transition-colors font-medium`}
                     onClick={toggleMenu}
                   >
                     Profile
@@ -309,7 +323,7 @@ const Navbar = () => {
 
                   <Link
                     to="/orders"
-                    className="text-gray-700 hover:text-emerald-600 transition-colors font-medium"
+                    className={`${isHomePage ? 'text-white hover:text-emerald-300' : 'text-gray-700 hover:text-emerald-600'} transition-colors font-medium`}
                     onClick={toggleMenu}
                   >
                     Orders
@@ -317,7 +331,7 @@ const Navbar = () => {
 
                   <Link
                     to="/messages"
-                    className="text-gray-700 hover:text-emerald-600 transition-colors font-medium"
+                    className={`${isHomePage ? 'text-white hover:text-emerald-300' : 'text-gray-700 hover:text-emerald-600'} transition-colors font-medium`}
                     onClick={toggleMenu}
                   >
                     Messages
@@ -328,7 +342,7 @@ const Navbar = () => {
                       handleLogout();
                       toggleMenu();
                     }}
-                    className="flex items-center space-x-2 text-gray-700 hover:text-green-500 transition-colors"
+                    className={`flex items-center space-x-2 ${isHomePage ? 'text-white hover:text-emerald-300' : 'text-gray-700 hover:text-green-500'} transition-colors`}
                   >
                     <FaSignOutAlt />
                     <span>Logout</span>
@@ -338,14 +352,14 @@ const Navbar = () => {
                 <div className="flex flex-col space-y-2">
                   <Link
                     to="/login"
-                    className="text-gray-700 hover:text-emerald-600 transition-colors font-medium"
+                    className={`${isHomePage ? 'text-white hover:text-emerald-300' : 'text-gray-700 hover:text-emerald-600'} transition-colors font-medium`}
                     onClick={toggleMenu}
                   >
                     Login
                   </Link>
                   <Link
                     to="/register"
-                    className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition-colors text-center"
+                    className={`${isHomePage ? 'bg-emerald-600 text-white hover:bg-emerald-700' : 'bg-green-500 text-white hover:bg-green-600'} px-4 py-2 rounded-lg transition-colors text-center`}
                     onClick={toggleMenu}
                   >
                     Register

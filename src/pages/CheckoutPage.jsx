@@ -161,7 +161,7 @@ const CheckoutPage = () => {
           Looks like you haven't added any products to your cart yet.
         </p>
         <button
-          onClick={() => navigate("/products")}
+          onClick={() => navigate("/marketplace")}
           className="btn btn-primary"
         >
           Browse Products

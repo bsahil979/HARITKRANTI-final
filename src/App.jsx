@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, Navigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { loadUser } from "./redux/slices/authSlice";
 import Layout from "./components/Layout";
@@ -22,6 +22,7 @@ import ProductsPage from "./pages/ProductsPage";
 import ProductDetailPage from "./pages/ProductDetailPage";
 import WeatherForecastPage from "./pages/WeatherForecastPage";
 import MarketplacePage from "./pages/MarketplacePage";
+import CartPage from "./pages/CartPage";
 import CropRecommendationPage from "./pages/CropRecommendationPage";
 import GuidancePage from "./pages/GuidancePage";
 import RoleSelectionPage from "./pages/RoleSelectionPage";
@@ -67,12 +68,13 @@ function App() {
           <Route path="register" element={<RegisterPage />} />
           <Route path="select-role" element={<RoleSelectionPage />} />
           <Route path="weather-forecast" element={<WeatherForecastPage />} />
-          <Route path="marketplace" element={<MarketplacePage />} />
+          <Route path="marketplace" element={<ProductsPage />} />
+          <Route path="cart" element={<CartPage />} />
           <Route path="crop-recommendation" element={<CropRecommendationPage />} />
           <Route path="guidance" element={<GuidancePage />} />
           <Route path="farmers" element={<FarmersPage />} />
           <Route path="farmers/:id" element={<FarmerDetailPage />} />
-          <Route path="products" element={<ProductsPage />} />
+          <Route path="products" element={<Navigate to="/marketplace" replace />} />
           <Route path="products/:id" element={<ProductDetailPage />} />
 
           {/* Protected Routes */}

@@ -15,13 +15,22 @@ const ProductCard = ({ product, userLocation }) => {
   const dispatch = useDispatch();
   const { t } = useI18n();
 
+  // Debug logging
+  console.log("ProductCard received product:", product);
+  console.log("Product images:", product?.images);
+
   const handleImageError = (e) => {
+    console.log("Image failed to load:", e.target.src);
     e.target.onerror = null;
     e.target.src = placeholder;
   };
 
   const handleAddToCart = () => {
-    dispatch(addToCart(product));
+    dispatch(addToCart({ product, quantity: 1 }));
+    // Show success message
+    setTimeout(() => {
+      // Optional: You can add a toast notification here
+    }, 100);
   };
 
   // Calculate delivery and freshness information
@@ -65,7 +74,7 @@ const ProductCard = ({ product, userLocation }) => {
           {product?.images?.length > 0 ? (
             <img
               src={product.images[0]}
-              alt={product.name || "Product"}
+              alt={product.title || product.name || "Product"}
               onError={handleImageError}
               className="w-full h-48 object-cover"
             />
@@ -106,7 +115,7 @@ const ProductCard = ({ product, userLocation }) => {
         {/* Product Info */}
         <div className="p-4">
           <h3 className="text-lg font-semibold mb-1 truncate">
-            {product.name || "Unnamed Product"}
+            {product.title || product.name || "Unnamed Product"}
           </h3>
           <p className="text-gray-500 text-sm mb-2 truncate">
             {product.category?.name || product.category || "General"}
@@ -137,7 +146,7 @@ const ProductCard = ({ product, userLocation }) => {
           
           <div className="flex justify-between items-center">
             <span className="text-green-600 font-bold">
-              ₨{product.price ? product.price.toFixed(2) : "0.00"}{" "}
+              ₨{(product.pricePerKg || product.price || 0).toFixed(2)}{" "}
               {product.unit ? `/ ${product.unit}` : ""}
             </span>
           </div>
@@ -145,12 +154,20 @@ const ProductCard = ({ product, userLocation }) => {
       </Link>
 
       {/* Add to Cart Button */}
-      <button
-        onClick={handleAddToCart}
-        className="m-4 w-[calc(100%-2rem)] bg-green-500 text-white py-2 px-4 rounded-md hover:bg-green-600 transition-colors duration-300"
-      >
-        {t("addToCart")}
-      </button>
+      <div className="m-4 space-y-2">
+        <button
+          onClick={handleAddToCart}
+          className="w-full bg-green-500 text-white py-2 px-4 rounded-md hover:bg-green-600 transition-colors duration-300"
+        >
+          {t("addToCart")}
+        </button>
+        <Link
+          to="/cart"
+          className="block w-full text-center bg-gray-100 text-gray-700 py-2 px-4 rounded-md hover:bg-gray-200 transition-colors duration-300"
+        >
+          View Cart
+        </Link>
+      </div>
     </div>
   );
 };

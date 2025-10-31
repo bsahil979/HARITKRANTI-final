@@ -10,6 +10,14 @@ import {
 import { getCategories } from "../../redux/slices/categorySlice";
 import Loader from "../../components/Loader";
 import { FaArrowLeft, FaUpload, FaTimes } from "react-icons/fa";
+import { 
+  fileToBase64, 
+  filesToBase64, 
+  compressImage, 
+  validateImageFile, 
+  createImagePreview, 
+  revokeImagePreview 
+} from "../../utils/imageUtils";
 
 const AddProductPage = () => {
   const dispatch = useDispatch();
@@ -21,12 +29,12 @@ const AddProductPage = () => {
   );
 
   const [formData, setFormData] = useState({
-    name: "",
+    title: "",
     description: "",
     category: "",
-    price: "",
+    pricePerKg: "",
     unit: "lb",
-    quantityAvailable: "",
+    quantityKg: "",
     images: [],
     isOrganic: false,
     harvestDate: "",
@@ -40,6 +48,17 @@ const AddProductPage = () => {
   useEffect(() => {
     dispatch(getCategories());
   }, [dispatch]);
+
+  // Cleanup object URLs when component unmounts
+  useEffect(() => {
+    return () => {
+      imagePreviewUrls.forEach(url => {
+        if (url && url.startsWith('blob:')) {
+          revokeImagePreview(url);
+        }
+      });
+    };
+  }, [imagePreviewUrls]);
 
   useEffect(() => {
     if (success) {
@@ -56,20 +75,52 @@ const AddProductPage = () => {
     });
   };
 
-  const handleImageChange = (e) => {
+  const handleImageChange = async (e) => {
     const files = Array.from(e.target.files);
-    const newImagePreviewUrls = files.map((file) => URL.createObjectURL(file));
+    
+    // Validate files
+    for (const file of files) {
+      const validation = validateImageFile(file);
+      if (!validation.valid) {
+        alert(validation.error);
+        return;
+      }
+    }
+    
+    // Limit to 5 images total
+    if (imagePreviewUrls.length + files.length > 5) {
+      alert('You can upload a maximum of 5 images');
+      return;
+    }
+    
+    try {
+      // Compress images and convert to base64
+      const compressedFiles = await Promise.all(
+        files.map(file => compressImage(file, 800, 600, 0.8))
+      );
+      
+      const base64Images = await filesToBase64(compressedFiles);
+      const newImagePreviewUrls = compressedFiles.map(file => createImagePreview(file));
 
-    setImagePreviewUrls([...imagePreviewUrls, ...newImagePreviewUrls]);
-    setFormData({
-      ...formData,
-      images: [...formData.images, ...newImagePreviewUrls],
-    });
+      setImagePreviewUrls([...imagePreviewUrls, ...newImagePreviewUrls]);
+      setFormData({
+        ...formData,
+        images: [...formData.images, ...base64Images],
+      });
+    } catch (error) {
+      console.error('Error processing images:', error);
+      alert('Error processing images. Please try again.');
+    }
   };
 
   const removeImage = (index) => {
     const newImagePreviewUrls = [...imagePreviewUrls];
     const newImages = [...formData.images];
+
+    // Revoke the object URL to free memory
+    if (newImagePreviewUrls[index]) {
+      revokeImagePreview(newImagePreviewUrls[index]);
+    }
 
     newImagePreviewUrls.splice(index, 1);
     newImages.splice(index, 1);
@@ -84,15 +135,15 @@ const AddProductPage = () => {
   const validateForm = () => {
     const newErrors = {};
 
-    if (!formData.name.trim()) newErrors.name = "Product name is required";
+    if (!formData.title.trim()) newErrors.title = "Product name is required";
     if (!formData.description.trim())
       newErrors.description = "Description is required";
     if (!formData.category) newErrors.category = "Category is required";
-    if (!formData.price || formData.price <= 0)
-      newErrors.price = "Valid price is required";
+    if (!formData.pricePerKg || formData.pricePerKg <= 0)
+      newErrors.pricePerKg = "Valid price is required";
     if (!formData.unit.trim()) newErrors.unit = "Unit is required";
-    if (!formData.quantityAvailable || formData.quantityAvailable < 0)
-      newErrors.quantityAvailable = "Valid quantity is required";
+    if (!formData.quantityKg || formData.quantityKg < 0)
+      newErrors.quantityKg = "Valid quantity is required";
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -127,24 +178,24 @@ const AddProductPage = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
             <div>
               <label
-                htmlFor="name"
+                htmlFor="title"
                 className="block text-sm font-medium text-gray-700 mb-1"
               >
                 Product Name*
               </label>
               <input
                 type="text"
-                id="name"
-                name="name"
-                value={formData.name}
+                id="title"
+                name="title"
+                value={formData.title}
                 onChange={handleChange}
                 className={`form-input ${
-                  errors.name ? "border-red-500" : ""
+                  errors.title ? "border-red-500" : ""
                 } pl-3`}
                 required
               />
-              {errors.name && (
-                <p className="text-red-500 text-xs mt-1">{errors.name}</p>
+              {errors.title && (
+                <p className="text-red-500 text-xs mt-1">{errors.title}</p>
               )}
             </div>
 
@@ -205,10 +256,10 @@ const AddProductPage = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
             <div>
               <label
-                htmlFor="price"
+                htmlFor="pricePerKg"
                 className="block text-sm font-medium text-gray-700 mb-1"
               >
-                Price*
+                Price per Kg*
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -216,20 +267,20 @@ const AddProductPage = () => {
                 </div>
                 <input
                   type="number"
-                  id="price"
-                  name="price"
-                  value={formData.price}
+                  id="pricePerKg"
+                  name="pricePerKg"
+                  value={formData.pricePerKg}
                   onChange={handleChange}
                   className={`form-input pl-7 ${
-                    errors.price ? "border-red-500" : ""
+                    errors.pricePerKg ? "border-red-500" : ""
                   } pl-3`}
                   step="0.01"
                   min="0"
                   required
                 />
               </div>
-              {errors.price && (
-                <p className="text-red-500 text-xs mt-1">{errors.price}</p>
+              {errors.pricePerKg && (
+                <p className="text-red-500 text-xs mt-1">{errors.pricePerKg}</p>
               )}
             </div>
 
@@ -266,26 +317,26 @@ const AddProductPage = () => {
 
             <div>
               <label
-                htmlFor="quantityAvailable"
+                htmlFor="quantityKg"
                 className="block text-sm font-medium text-gray-700 mb-1"
               >
-                Quantity Available*
+                Quantity (Kg)*
               </label>
               <input
                 type="number"
-                id="quantityAvailable"
-                name="quantityAvailable"
-                value={formData.quantityAvailable}
+                id="quantityKg"
+                name="quantityKg"
+                value={formData.quantityKg}
                 onChange={handleChange}
                 className={`form-input ${
-                  errors.quantityAvailable ? "border-red-500" : ""
+                  errors.quantityKg ? "border-red-500" : ""
                 } pl-3`}
                 min="0"
                 required
               />
-              {errors.quantityAvailable && (
+              {errors.quantityKg && (
                 <p className="text-red-500 text-xs mt-1">
-                  {errors.quantityAvailable}
+                  {errors.quantityKg}
                 </p>
               )}
             </div>

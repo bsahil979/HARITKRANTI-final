@@ -296,7 +296,7 @@ const DashboardPage = () => {
                             {product.images && product.images.length > 0 ? (
                               <img
                                 src={product.images[0] || "/placeholder.svg"}
-                                alt={product.name}
+                                alt={product.title || product.name}
                                 className="w-full h-full object-cover"
                               />
                             ) : (
@@ -309,13 +309,13 @@ const DashboardPage = () => {
                             to={`/products/${product._id}`}
                             className="text-green-500 hover:text-green-700"
                           >
-                            {product.name}
+                            {product.title || product.name}
                           </Link>
                         </div>
                       </td>
                       <td className="py-3">{product.farmer?.name}</td>
                       <td className="text-center py-3">
-                        ₨{product.price.toFixed(2)}
+                        ₨{(product.pricePerKg || product.price || 0).toFixed(2)}
                       </td>
                       <td className="text-right py-3">
                         <span

@@ -278,7 +278,7 @@ const OrderDetailPage = () => {
                           item.product.images.length > 0 ? (
                             <img
                               src={item.product.images[0] || "/placeholder.svg"}
-                              alt={item.product.name}
+                              alt={item.product.title || item.product.name}
                               className="w-full h-full object-cover"
                             />
                           ) : (
@@ -289,7 +289,7 @@ const OrderDetailPage = () => {
                         </div>
                         <div>
                           <p className="font-medium text-gray-800">
-                            {item.product.name}
+                            {item.product.title || item.product.name}
                           </p>
                         </div>
                       </div>

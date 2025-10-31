@@ -5,7 +5,7 @@ import Loader from "./Loader"
 const FarmerRoute = () => {
   const { isAuthenticated, loading, user } = useSelector((state) => state.auth)
 
-  if (loading) {
+  if (loading) {fdgfdghdhggd
     return <Loader />
   }
 

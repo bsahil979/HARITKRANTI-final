@@ -35,16 +35,16 @@ const cartSlice = createSlice({
               ? { ...item, quantity: item.quantity + quantity }
               : item
           );
-          toast.info(`Updated ${product.name} quantity in your cart`);
+          toast.info(`Updated ${product.title || product.name} quantity in your cart`);
         } else {
           state.cartItems.push({
             productId: product._id,
-            name: product.name,
+            name: product.title || product.name,
             image:
               product.images && product.images.length > 0
                 ? product.images[0]
                 : null,
-            price: product.price,
+            price: product.pricePerKg || product.price,
             quantity,
             farmerId: product.farmer._id,
             farmerName: product.farmer.name,
@@ -55,7 +55,7 @@ const cartSlice = createSlice({
             state.farmerName = product.farmer.name;
           }
 
-          toast.success(`Added ${product.name} to your cart`);
+          toast.success(`Added ${product.title || product.name} to your cart`);
         }
       } else {
         toast.error(

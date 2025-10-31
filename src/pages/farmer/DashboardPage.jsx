@@ -220,7 +220,7 @@ const DashboardPage = () => {
           </Link>
         </div>
 
-        {farmerProducts.filter((product) => product.quantityAvailable < 10)
+        {farmerProducts.filter((product) => (product.quantityKg || product.quantityAvailable || 0) < 10)
           .length > 0 ? (
           <div className="overflow-x-auto">
             <table className="w-full">
@@ -234,7 +234,7 @@ const DashboardPage = () => {
               </thead>
               <tbody>
                 {farmerProducts
-                  .filter((product) => product.quantityAvailable < 10)
+                  .filter((product) => (product.quantityKg || product.quantityAvailable || 0) < 10)
                   .slice(0, 5)
                   .map((product) => (
                     <tr key={product._id} className="border-b border-gray-200">
@@ -244,7 +244,7 @@ const DashboardPage = () => {
                             {product.images && product.images.length > 0 ? (
                               <img
                                 src={product.images[0] || "/placeholder.svg"}
-                                alt={product.name}
+                                alt={product.title || product.name}
                                 className="w-full h-full object-cover"
                               />
                             ) : (
@@ -253,23 +253,23 @@ const DashboardPage = () => {
                               </div>
                             )}
                           </div>
-                          <span>{product.name}</span>
+                          <span>{product.title || product.name}</span>
                         </div>
                       </td>
                       <td className="text-center py-3">
-                        ₨{product.price.toFixed(2)}
+                        ₨{(product.pricePerKg || product.price || 0).toFixed(2)}
                       </td>
                       <td className="text-center py-3">
                         <span
                           className={`${
-                            product.quantityAvailable === 0
+                            (product.quantityKg || product.quantityAvailable || 0) === 0
                               ? "text-red-500"
-                              : product.quantityAvailable < 5
+                              : (product.quantityKg || product.quantityAvailable || 0) < 5
                               ? "text-orange-500"
                               : "text-yellow-500"
                           } font-medium`}
                         >
-                          {product.quantityAvailable} {product.unit}
+                          {product.quantityKg || product.quantityAvailable} {product.unit}
                         </span>
                       </td>
                       <td className="text-right py-3">

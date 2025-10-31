@@ -21,9 +21,12 @@ export const getProducts = createAsyncThunk(
         url += `?${queryParams.toString()}`;
       }
 
+      console.log("Fetching products from API:", url);
       const { data } = await axios.get(url);
+      console.log("Products API response:", data);
       return data;
     } catch (error) {
+      console.log("Products API error:", error.message);
       const message =
         error.response && error.response.data.message
           ? error.response.data.message

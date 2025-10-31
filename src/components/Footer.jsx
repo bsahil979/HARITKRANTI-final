@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { FaSeedling, FaEnvelope, FaPhone, FaMapMarkerAlt } from "react-icons/fa";
+import { FaSeedling, FaEnvelope, FaPhone, FaMapMarkerAlt, FaFacebook, FaTwitter, FaInstagram, FaYoutube } from "react-icons/fa";
 import { toast } from "react-toastify";
 
 const Footer = () => {
@@ -20,8 +20,11 @@ const Footer = () => {
   };
 
   return (
-    <footer className="bg-gray-900 text-white pt-12 pb-6">
-      <div className="container mx-auto px-4">
+    <footer className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white pt-12 pb-6 rounded-t-3xl relative overflow-hidden">
+      <div className="absolute inset-0 bg-gradient-to-r from-emerald-900/10 via-transparent to-teal-900/10"></div>
+      <div className="absolute top-0 left-1/4 w-96 h-96 bg-emerald-500/5 rounded-full blur-3xl"></div>
+      <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-teal-500/5 rounded-full blur-3xl"></div>
+      <div className="container mx-auto px-4 relative z-10">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
           <div>
             <div className="flex items-center gap-2 mb-4">
@@ -97,8 +100,24 @@ const Footer = () => {
           </div>
         </div>
 
-        <div className="border-t border-gray-700 mt-10 pt-6 text-center text-gray-500 text-sm">
-          <p>&copy; {currentYear} HaritKranti. All rights reserved.</p>
+        <div className="border-t border-gray-700 mt-10 pt-6">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+            <p className="text-gray-500 text-sm">&copy; {currentYear} HaritKranti. All rights reserved.</p>
+            <div className="flex space-x-4">
+              <a href="#" className="text-gray-400 hover:text-emerald-400 transition-colors">
+                <FaFacebook className="text-xl" />
+              </a>
+              <a href="#" className="text-gray-400 hover:text-emerald-400 transition-colors">
+                <FaTwitter className="text-xl" />
+              </a>
+              <a href="#" className="text-gray-400 hover:text-emerald-400 transition-colors">
+                <FaInstagram className="text-xl" />
+              </a>
+              <a href="#" className="text-gray-400 hover:text-emerald-400 transition-colors">
+                <FaYoutube className="text-xl" />
+              </a>
+            </div>
+          </div>
         </div>
       </div>
     </footer>

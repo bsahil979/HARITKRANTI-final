@@ -142,7 +142,7 @@ const ProductDetailPage = () => {
             {product.images && product.images.length > 0 ? (
               <img
                 src={product.images[activeImage]}
-                alt={product.name}
+                alt={product.title || product.name}
                 onError={handleImageError}
                 className="w-full h-full object-cover"
               />
@@ -169,7 +169,7 @@ const ProductDetailPage = () => {
                 >
                   <img
                     src={image || placeholder}
-                    alt={`${product.name} - ${index + 1}`}
+                    alt={`${product.title || product.name} - ${index + 1}`}
                     className="w-full h-full object-cover"
                   />
                 </div>
@@ -179,7 +179,7 @@ const ProductDetailPage = () => {
         </div>
 
         <div>
-          <h1 className="text-3xl font-bold mb-2">{product.name}</h1>
+          <h1 className="text-3xl font-bold mb-2">{product.title || product.name}</h1>
 
           <div className="flex items-center mb-4">
             <span className="text-gray-600 mr-4">
@@ -191,7 +191,7 @@ const ProductDetailPage = () => {
           </div>
 
           <div className="text-2xl font-bold text-green-600 mb-4">
-            ₨{product.price.toFixed(2)} / {product.unit}
+            ₨{(product.pricePerKg || product.price || 0).toFixed(2)} / {product.unit}
           </div>
 
           <p className="text-gray-700 mb-6">{product.description}</p>

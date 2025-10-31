@@ -47,7 +47,7 @@ const EditProductPage = () => {
   useEffect(() => {
     if (product) {
       setFormData({
-        name: product.name || "",
+        name: product.title || product.name || "",
         description: product.description || "",
         category: product.category?._id || "",
         price: product.price || "",

@@ -170,4 +170,7 @@ const FarmerCard = ({ farmer }) => {
   );
 };
 
+
+
+
 export default FarmerCard;

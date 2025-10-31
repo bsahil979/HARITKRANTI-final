@@ -175,7 +175,12 @@ const ProductsPage = () => {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-8">{t("browseProducts")}</h1>
+      <div className="text-center mb-8">
+        <h1 className="text-4xl font-bold mb-2">Direct Marketplace</h1>
+        <p className="text-lg text-gray-600">
+          Connect directly with farmers and buy fresh fruits and vegetables at fair prices.
+        </p>
+      </div>
 
       {/* Location Section */}
       <div className="mb-6 p-4 bg-blue-50 rounded-lg border border-blue-200">

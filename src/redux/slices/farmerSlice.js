@@ -8,9 +8,12 @@ const API_URL = import.meta.env.VITE_API_URL
 // Get all farmers
 export const getAllFarmers = createAsyncThunk("farmers/getAllFarmers", async (_, { rejectWithValue }) => {
   try {
+    console.log("Fetching farmers from API:", `${API_URL}/users/farmers`)
     const { data } = await axios.get(`${API_URL}/users/farmers`)
+    console.log("Farmers API response:", data)
     return data
   } catch (error) {
+    console.log("Farmers API error:", error.message)
     // Fallback to sample data if API is not available
     console.log("Using sample farmer data")
     return { data: farmers }

@@ -33,7 +33,7 @@ const ProductsPage = () => {
     if (farmerProducts) {
       setFilteredProducts(
         farmerProducts.filter((product) =>
-          product.name.toLowerCase().includes(searchTerm.toLowerCase())
+          (product.title || product.name || "").toLowerCase().includes(searchTerm.toLowerCase())
         )
       );
     }
@@ -126,7 +126,7 @@ const ProductsPage = () => {
                           {product.images && product.images.length > 0 ? (
                             <img
                               src={product.images[0] || "/placeholder.svg"}
-                              alt={product.name}
+                              alt={product.title || product.name}
                               className="w-full h-full object-cover"
                             />
                           ) : (
@@ -137,7 +137,7 @@ const ProductsPage = () => {
                         </div>
                         <div>
                           <div className="font-medium text-gray-900">
-                            {product.name}
+                            {product.title || product.name}
                           </div>
                           <div className="text-sm text-gray-500 truncate max-w-xs">
                             {product.description.substring(0, 50)}

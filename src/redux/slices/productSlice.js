@@ -82,18 +82,11 @@ export const createProduct = createAsyncThunk(
     try {
       const token = getState().auth.token;
 
-      const config = {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      };
+      const isFormData = typeof FormData !== "undefined" && productData instanceof FormData;
+      const headers = { Authorization: `Bearer ${token}` };
+      if (!isFormData) headers["Content-Type"] = "application/json";
 
-      const { data } = await axios.post(
-        `${API_URL}/products`,
-        productData,
-        config
-      );
+      const { data } = await axios.post(`${API_URL}/products`, productData, { headers });
       return data;
     } catch (error) {
       const message =

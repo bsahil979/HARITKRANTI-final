@@ -92,3 +92,8 @@ userSchema.methods.toJSON = function () {
 };
 
 export default mongoose.model("User", userSchema);
+<<<<<<< HEAD
+=======
+
+
+>>>>>>> dda2e67 (Backup current local fixes before revert)

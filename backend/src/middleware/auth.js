@@ -17,7 +17,26 @@ export const protect = async (req, res, next) => {
     }
 
     try {
-      const jwtSecret = process.env.JWT_SECRET || "haritkranti_super_secret_jwt_key_2024_secure_token_generation";
+      const envSecret = process.env.JWT_SECRET;
+      const normalize = (value) => {
+        if (!value) return "";
+        const trimmed = value.trim();
+        if ((trimmed.startsWith('"') && trimmed.endsWith('"')) || (trimmed.startsWith("'") && trimmed.endsWith("'"))) {
+          return trimmed.slice(1, -1).trim();
+        }
+        return trimmed;
+      };
+      const normalizedSecret = normalize(envSecret);
+      const invalidMarkers = new Set(["undefined", "null"]);
+      const effectiveSecret = invalidMarkers.has(normalizedSecret.toLowerCase()) ? "" : normalizedSecret;
+      const jwtSecret = effectiveSecret.length > 0
+        ? normalizedSecret
+        : "haritkranti_super_secret_jwt_key_2024_secure_token_generation";
+      if (!jwtSecret || jwtSecret.length === 0) {
+        console.error("JWT secret resolution failed in middleware: empty secret after normalization.");
+        throw new Error("JWT secret not configured");
+      }
+      console.log(`[auth] Verifying token with secret length=${jwtSecret.length}`);
       const decoded = jwt.verify(token, jwtSecret);
       req.user = await User.findById(decoded.id);
       next();
@@ -47,5 +66,3 @@ export const authorize = (...roles) => {
     next();
   };
 };
-
-

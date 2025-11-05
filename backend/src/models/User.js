@@ -24,6 +24,13 @@ const userSchema = new mongoose.Schema(
       type: String,
       enum: ["farmer", "consumer", "admin"],
       default: "consumer",
+      set: (value) => {
+        if (value === undefined || value === null) return value;
+        const normalized = String(value).trim().toLowerCase();
+        if (normalized === "customer") return "consumer";
+        if (["consumer", "farmer", "admin"].includes(normalized)) return normalized;
+        return normalized; // let enum validator handle invalid values
+      },
     },
     phone: {
       type: String,
@@ -85,5 +92,3 @@ userSchema.methods.toJSON = function () {
 };
 
 export default mongoose.model("User", userSchema);
-
-

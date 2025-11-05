@@ -1,10 +1,41 @@
 import jwt from "jsonwebtoken";
 import User from "../models/User.js";
 
+// Normalize role values coming from the client
+const normalizeRole = (role) => {
+  if (role === undefined || role === null) return undefined;
+  const normalized = String(role).trim().toLowerCase();
+  if (normalized === "customer") return "consumer";
+  if (["consumer", "farmer", "admin"].includes(normalized)) return normalized;
+  return undefined;
+};
+
 // Generate JWT Token
 const generateToken = (id) => {
-  return jwt.sign({ id }, process.env.JWT_SECRET, {
-    expiresIn: process.env.JWT_EXPIRE,
+  const envSecret = process.env.JWT_SECRET;
+  const envExpire = process.env.JWT_EXPIRE;
+  const normalize = (value) => {
+    if (!value) return "";
+    const trimmed = value.trim();
+    if ((trimmed.startsWith('"') && trimmed.endsWith('"')) || (trimmed.startsWith("'") && trimmed.endsWith("'"))) {
+      return trimmed.slice(1, -1).trim();
+    }
+    return trimmed;
+  };
+  const normalizedSecret = normalize(envSecret);
+  const invalidMarkers = new Set(["undefined", "null"]);
+  const effectiveSecret = invalidMarkers.has(normalizedSecret.toLowerCase()) ? "" : normalizedSecret;
+  const jwtSecret = effectiveSecret.length > 0
+    ? normalizedSecret
+    : "haritkranti_super_secret_jwt_key_2024_secure_token_generation";
+  const jwtExpire = envExpire && envExpire.trim().length > 0 ? envExpire : "7d";
+  if (!jwtSecret || jwtSecret.length === 0) {
+    console.error("JWT secret resolution failed: empty secret after normalization. Falling back failed.");
+    throw new Error("JWT secret not configured");
+  }
+  console.log(`[auth] Signing token with secret length=${jwtSecret.length}, expiresIn=${jwtExpire}`);
+  return jwt.sign({ id }, jwtSecret, {
+    expiresIn: jwtExpire,
   });
 };
 
@@ -14,6 +45,7 @@ const generateToken = (id) => {
 export const register = async (req, res, next) => {
   try {
     const { name, email, password, role, phone } = req.body;
+    const normalizedRole = normalizeRole(role) || "consumer";
 
     // Check if user exists
     const userExists = await User.findOne({ email });
@@ -29,7 +61,7 @@ export const register = async (req, res, next) => {
       name,
       email,
       password,
-      role: role || "consumer",
+      role: normalizedRole,
       phone,
     });
 
@@ -57,6 +89,7 @@ export const register = async (req, res, next) => {
 export const login = async (req, res, next) => {
   try {
     const { email, password, role } = req.body;
+    const normalizedRole = normalizeRole(role);
 
     // Check for user
     const user = await User.findOne({ email }).select("+password");
@@ -77,7 +110,7 @@ export const login = async (req, res, next) => {
     }
 
     // Check role if specified
-    if (role && user.role !== role) {
+    if (normalizedRole && user.role !== normalizedRole) {
       return res.status(401).json({
         success: false,
         message: "Invalid role",
@@ -117,5 +150,3 @@ export const getMe = async (req, res, next) => {
     next(error);
   }
 };
-
-

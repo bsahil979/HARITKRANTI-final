@@ -52,20 +52,41 @@ const LoginPage = () => {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8 glass p-10 rounded-xl">
-        <div className="text-center">
-          <div className="flex justify-center">
-            <FaSeedling className="text-green-500 text-4xl" />
+    <div className="relative min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 overflow-hidden">
+      {/* Background Video - Sunlight through leaves / Farm field at sunrise */}
+      <video
+        autoPlay
+        loop
+        muted
+        playsInline
+        className="absolute top-0 left-0 w-full h-full object-cover opacity-80 z-0"
+        poster="/assets/farm-sunlight.jpg"
+      >
+        <source src="/assets/farm-sunlight.mp4" type="video/mp4" />
+        {/* Fallback to existing video if new video not available */}
+        <source src="/haritvideo.mp4" type="video/mp4" />
+      </video>
+      
+      {/* Semi-transparent overlay */}
+      <div className="absolute top-0 left-0 w-full h-full bg-green-900/30 backdrop-blur-sm z-10"></div>
+      
+      {/* Content */}
+      <div className="relative z-20 bg-white/80 rounded-2xl shadow-xl p-8 w-96 max-w-full">
+        <div className="text-center mb-6">
+          <div className="flex justify-center mb-4">
+            <FaSeedling className="text-green-600 text-4xl" />
           </div>
-          <h2 className="mt-6 text-3xl font-extrabold text-gray-900">
-            Sign in as {role ? (role === "farmer" ? "Farmer" : role === "admin" ? "Admin" : "Customer") : "User"}
+          <h2 className="text-2xl font-bold text-green-800 mb-2">
+            Welcome Back
           </h2>
-          <p className="mt-2 text-sm text-gray-600">
+          <p className="text-gray-700 mb-4">
+            Login to your HaritKranti account
+          </p>
+          <p className="text-sm text-gray-700">
             Or{" "}
             <Link
               to={role ? `/register?role=${role}` : "/select-role"}
-              className="font-medium text-green-600 hover:text-green-500"
+              className="font-medium text-green-600 hover:text-green-700"
             >
               create a new account
             </Link>
@@ -81,7 +102,7 @@ const LoginPage = () => {
           </div>
         )}
 
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+        <form className="space-y-6" onSubmit={handleSubmit}>
           <div className="rounded-md shadow-sm -space-y-px">
             <div className="mb-4">
               <label
@@ -156,7 +177,7 @@ const LoginPage = () => {
               />
               <label
                 htmlFor="remember-me"
-                className="ml-2 block text-sm text-gray-900"
+                className="ml-2 block text-sm text-gray-700"
               >
                 Remember me
               </label>

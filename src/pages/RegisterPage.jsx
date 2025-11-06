@@ -105,20 +105,41 @@ const RegisterPage = () => {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8 glass p-10 rounded-xl">
-        <div className="text-center">
-          <div className="flex justify-center">
-            <FaSeedling className="text-green-500 text-4xl" />
+    <div className="relative min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 overflow-hidden">
+      {/* Background Video - Top view of green fields / Paddy farms */}
+      <video
+        autoPlay
+        loop
+        muted
+        playsInline
+        className="absolute top-0 left-0 w-full h-full object-cover opacity-80 z-0"
+        poster="/assets/farm-fields.jpg"
+      >
+        <source src="/assets/farm-fields.mp4" type="video/mp4" />
+        {/* Fallback to existing video if new video not available */}
+        <source src="/haritvideo.mp4" type="video/mp4" />
+      </video>
+      
+      {/* Semi-transparent overlay */}
+      <div className="absolute top-0 left-0 w-full h-full bg-green-900/30 backdrop-blur-sm z-10"></div>
+      
+      {/* Content */}
+      <div className="relative z-20 bg-white/80 rounded-2xl shadow-xl p-8 w-96 max-w-full">
+        <div className="text-center mb-6">
+          <div className="flex justify-center mb-4">
+            <FaSeedling className="text-green-600 text-4xl" />
           </div>
-          <h2 className="mt-6 text-3xl font-extrabold text-gray-900">
+          <h2 className="text-2xl font-bold text-green-800 mb-2">
             Create {formData.role === "farmer" ? "Farmer" : "Customer"} Account
           </h2>
-          <p className="mt-2 text-sm text-gray-600">
+          <p className="text-gray-700 mb-4">
+            Join HaritKranti and start your journey
+          </p>
+          <p className="text-sm text-gray-700">
             Or{" "}
             <Link
               to={"/login?role=" + formData.role}
-              className="font-medium text-green-600 hover:text-green-500"
+              className="font-medium text-green-600 hover:text-green-700"
             >
               sign in to your existing account
             </Link>
@@ -143,7 +164,7 @@ const RegisterPage = () => {
           </div>
         )}
 
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+        <form className="space-y-6" onSubmit={handleSubmit}>
           <div className="rounded-md shadow-sm">
             <div className="mb-4">
               <label

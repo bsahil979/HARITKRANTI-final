@@ -5,15 +5,33 @@ import { FaUser, FaSeedling, FaUserShield } from "react-icons/fa";
 
 const RoleSelectionPage = () => {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8 glass p-10 rounded-xl text-center">
-        <div className="flex justify-center">
-          <FaSeedling className="text-green-500 text-4xl" />
+    <div className="relative min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 overflow-hidden">
+      {/* Background Video - Close-up of crops swaying / Green meadow with gentle breeze */}
+      <video
+        autoPlay
+        loop
+        muted
+        playsInline
+        className="absolute top-0 left-0 w-full h-full object-cover opacity-80 z-0"
+        poster="/assets/farm-meadow.jpg"
+      >
+        <source src="/assets/farm-meadow.mp4" type="video/mp4" />
+        {/* Fallback to existing video if new video not available */}
+        <source src="/haritvideo.mp4" type="video/mp4" />
+      </video>
+      
+      {/* Semi-transparent overlay */}
+      <div className="absolute top-0 left-0 w-full h-full bg-green-900/30 backdrop-blur-sm z-10"></div>
+      
+      {/* Content */}
+      <div className="relative z-20 bg-white/80 rounded-2xl shadow-xl p-8 w-96 max-w-full text-center">
+        <div className="flex justify-center mb-4">
+          <FaSeedling className="text-green-600 text-4xl" />
         </div>
-        <h2 className="mt-6 text-3xl font-extrabold text-gray-900">
+        <h2 className="text-2xl font-bold text-green-800 mb-2">
           Select Your Role
         </h2>
-        <p className="mt-2 text-sm text-gray-600">
+        <p className="text-gray-700 mb-6">
           Please select your role to proceed.
         </p>
 

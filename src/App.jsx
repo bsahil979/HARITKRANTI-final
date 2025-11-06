@@ -24,6 +24,7 @@ import WeatherForecastPage from "./pages/WeatherForecastPage";
 import MarketplacePage from "./pages/MarketplacePage";
 import CartPage from "./pages/CartPage";
 import CropRecommendationPage from "./pages/CropRecommendationPage";
+import CropRecommendationHistoryPage from "./pages/CropRecommendationHistoryPage";
 import GuidancePage from "./pages/GuidancePage";
 import RoleSelectionPage from "./pages/RoleSelectionPage";
 import NotFoundPage from "./pages/NotFoundPage";
@@ -94,6 +95,7 @@ function App() {
             <Route path="messages/:userId" element={<ConversationPage />} />
             <Route path="orders" element={<OrdersPage />} />
             <Route path="orders/:id" element={<OrderDetailPage />} />
+            <Route path="crop-recommendation/history" element={<CropRecommendationHistoryPage />} />
           </Route>
 
           {/* Consumer Routes */}

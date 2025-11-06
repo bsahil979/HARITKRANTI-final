@@ -13,6 +13,7 @@ import orderRouter from "./routes/order.routes.js";
 import notificationRouter from "./routes/notification.routes.js";
 import imageRouter from "./routes/image.routes.js";
 import cropRecommendationRouter from "./routes/cropRecommendation.routes.js";
+import categoryRouter from "./routes/category.routes.js";
 import { errorHandler, notFound } from "./middleware/error.js";
 
 const app = express();
@@ -32,6 +33,7 @@ app.use("/api/orders", orderRouter);
 app.use("/api/notifications", notificationRouter);
 app.use("/api/images", imageRouter);
 app.use("/api/crop-recommendation", cropRecommendationRouter);
+app.use("/api/categories", categoryRouter);
 
 app.use(notFound);
 app.use(errorHandler);

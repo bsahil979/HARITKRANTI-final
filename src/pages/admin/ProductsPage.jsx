@@ -13,10 +13,14 @@ const ProductsPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [listFilter, setListFilter] = useState("all"); // all, pending, listed
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [productToDelete, setProductToDelete] = useState(null);
   const [showDetails, setShowDetails] = useState(null);
+  const [showApproveModal, setShowApproveModal] = useState(false);
+  const [productToApprove, setProductToApprove] = useState(null);
+  const [approvePrice, setApprovePrice] = useState("");
 
   useEffect(() => {
     dispatch(getProducts());
@@ -37,6 +41,13 @@ const ProductsPage = () => {
         });
       }
 
+      // Filter by listing status
+      if (listFilter === "pending") {
+        filtered = filtered.filter((product) => !product.isListed || product.status === "pending");
+      } else if (listFilter === "listed") {
+        filtered = filtered.filter((product) => product.isListed === true);
+      }
+
       if (searchTerm) {
         filtered = filtered.filter(
           (product) =>
@@ -50,7 +61,7 @@ const ProductsPage = () => {
     } else {
       setFilteredProducts([]);
     }
-  }, [products, searchTerm, categoryFilter, statusFilter]);
+  }, [products, searchTerm, categoryFilter, statusFilter, listFilter]);
 
   const handleDeleteClick = (product) => {
     setProductToDelete(product);
@@ -73,6 +84,49 @@ const ProductsPage = () => {
     dispatch(updateProduct({ id: product._id || product.id, productData: { status: newStatus } }));
   };
 
+  const handleApproveClick = (product) => {
+    setProductToApprove(product);
+    setApprovePrice(product.pricePerKg || product.price || "");
+    setShowApproveModal(true);
+  };
+
+  const handleApproveProduct = async () => {
+    if (!productToApprove || !approvePrice || approvePrice <= 0) {
+      alert("Please enter a valid price");
+      return;
+    }
+
+    try {
+      const API_URL = import.meta.env.VITE_API_URL || "/api";
+      const token = localStorage.getItem("token");
+      
+      const response = await fetch(`${API_URL}/products/${productToApprove._id || productToApprove.id}/approve`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          approvedPrice: parseFloat(approvePrice),
+          pricePerKg: parseFloat(approvePrice),
+        }),
+      });
+
+      if (response.ok) {
+        dispatch(getProducts()); // Refresh products list
+        setShowApproveModal(false);
+        setProductToApprove(null);
+        setApprovePrice("");
+      } else {
+        const error = await response.json();
+        alert(error.message || "Failed to approve product");
+      }
+    } catch (error) {
+      console.error("Error approving product:", error);
+      alert("Failed to approve product");
+    }
+  };
+
   if (loading && products.length === 0) {
     return <Loader />;
   }
@@ -93,7 +147,7 @@ const ProductsPage = () => {
 
       {/* Filters */}
       <div className="glass p-6 rounded-xl mb-6">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <div>
             <div className="relative">
               <input
@@ -129,9 +183,22 @@ const ProductsPage = () => {
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
             >
               <option value="all">All Status</option>
+              <option value="pending">Pending</option>
               <option value="available">Available</option>
               <option value="reserved">Reserved</option>
               <option value="sold">Sold</option>
+            </select>
+          </div>
+
+          <div>
+            <select
+              value={listFilter}
+              onChange={(e) => setListFilter(e.target.value)}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+            >
+              <option value="all">All Products</option>
+              <option value="pending">Pending Approval</option>
+              <option value="listed">Listed in Marketplace</option>
             </select>
           </div>
         </div>
@@ -161,6 +228,9 @@ const ProductsPage = () => {
                   </th>
                   <th className="text-center px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Status
+                  </th>
+                  <th className="text-center px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Listed
                   </th>
                   <th className="text-right px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Actions
@@ -231,23 +301,46 @@ const ProductsPage = () => {
                       </td>
                       <td className="px-6 py-4 text-center">
                         <select
-                          value={product.status || "available"}
+                          value={product.status || "pending"}
                           onChange={(e) => handleStatusChange(product, e.target.value)}
                           className={`text-xs px-2 py-1 rounded-full border-0 ${
                             product.status === "available"
                               ? "bg-green-100 text-green-800"
+                              : product.status === "pending"
+                              ? "bg-orange-100 text-orange-800"
                               : product.status === "reserved"
                               ? "bg-yellow-100 text-yellow-800"
                               : "bg-red-100 text-red-800"
                           }`}
                         >
+                          <option value="pending">Pending</option>
                           <option value="available">Available</option>
                           <option value="reserved">Reserved</option>
                           <option value="sold">Sold</option>
                         </select>
                       </td>
+                      <td className="px-6 py-4 text-center">
+                        {product.isListed ? (
+                          <span className="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
+                            Listed
+                          </span>
+                        ) : (
+                          <span className="px-2 py-1 text-xs font-semibold rounded-full bg-orange-100 text-orange-800">
+                            Pending
+                          </span>
+                        )}
+                      </td>
                       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                         <div className="flex justify-end space-x-2">
+                          {!product.isListed && (
+                            <button
+                              onClick={() => handleApproveClick(product)}
+                              className="text-green-600 hover:text-green-900"
+                              title="Approve & List"
+                            >
+                              <FaCheck />
+                            </button>
+                          )}
                           <button
                             onClick={() => toggleDetails(product._id || product.id)}
                             className="text-blue-600 hover:text-blue-900"
@@ -267,7 +360,7 @@ const ProductsPage = () => {
                     </tr>
                     {showDetails === (product._id || product.id) && (
                       <tr className="bg-gray-50">
-                        <td colSpan="7" className="px-6 py-4">
+                        <td colSpan="8" className="px-6 py-4">
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
                               <h4 className="font-medium mb-2">Product Details</h4>
@@ -324,6 +417,56 @@ const ProductsPage = () => {
               ? "No products match your search criteria."
               : "There are no products in the system yet."}
           </p>
+        </div>
+      )}
+
+      {/* Approve Product Modal */}
+      {showApproveModal && productToApprove && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 max-w-md w-full">
+            <h3 className="text-xl font-bold mb-4">Approve & List Product</h3>
+            <div className="mb-4">
+              <p className="text-sm text-gray-600 mb-2">
+                Product: <span className="font-medium">{productToApprove.name || productToApprove.title}</span>
+              </p>
+              <p className="text-sm text-gray-600 mb-4">
+                Farmer's Suggested Price: ₨{((productToApprove.pricePerKg || productToApprove.price || 0).toFixed(2))}
+              </p>
+            </div>
+            <div className="mb-6">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Set Marketplace Price (₨)
+              </label>
+              <input
+                type="number"
+                value={approvePrice}
+                onChange={(e) => setApprovePrice(e.target.value)}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                placeholder="Enter price"
+                min="0"
+                step="0.01"
+                required
+              />
+            </div>
+            <div className="flex justify-end space-x-3">
+              <button
+                onClick={() => {
+                  setShowApproveModal(false);
+                  setProductToApprove(null);
+                  setApprovePrice("");
+                }}
+                className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleApproveProduct}
+                className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
+              >
+                Approve & List
+              </button>
+            </div>
+          </div>
         </div>
       )}
 

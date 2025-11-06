@@ -19,16 +19,27 @@ const productSchema = new mongoose.Schema(
     // Unit
     unit: { type: String, default: "kg" },
     
-    // Category
+    // Category - support both ObjectId reference and string enum for backward compatibility
     category: { 
-      type: String, 
-      enum: [
-        "grains", "vegetables", "fruits", "pulses", "spices", "oilseeds", "other"
-      ],
-      default: "other",
-      index: true,
+      type: mongoose.Schema.Types.Mixed,
       required: true,
-      trim: true 
+      index: true,
+      validate: {
+        validator: function(v) {
+          // Allow ObjectId (reference to Category model)
+          if (mongoose.Types.ObjectId.isValid(v)) return true;
+          // Allow string enum values for backward compatibility
+          const validEnums = ["grains", "vegetables", "fruits", "pulses", "spices", "oilseeds", "other"];
+          return typeof v === "string" && validEnums.includes(v.toLowerCase());
+        },
+        message: "Category must be a valid category ID or enum value"
+      }
+    },
+    // Category reference (for population)
+    categoryRef: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Category",
+      index: true,
     },
     
     // Images - support both single imageUrl and multiple images
@@ -63,9 +74,20 @@ const productSchema = new mongoose.Schema(
     // Status
     status: { 
       type: String, 
-      enum: ["available", "reserved", "sold", "out_of_stock"], 
-      default: "available",
+      enum: ["available", "reserved", "sold", "out_of_stock", "pending"], 
+      default: "pending",
       index: true 
+    },
+    // Marketplace listing status - only approved products appear in marketplace
+    isListed: {
+      type: Boolean,
+      default: false,
+      index: true
+    },
+    // Admin-approved price (can be different from farmer's suggested price)
+    approvedPrice: {
+      type: Number,
+      min: 0
     },
   },
   { timestamps: true }
@@ -121,6 +143,13 @@ productSchema.pre("save", function(next) {
   }
   if (this.images && this.images.length > 0 && !this.imageUrl) {
     this.imageUrl = this.images[0];
+  }
+  
+  // Handle category - if ObjectId, set categoryRef; if string, keep as is
+  if (this.category && mongoose.Types.ObjectId.isValid(this.category)) {
+    this.categoryRef = this.category;
+  } else if (!this.category) {
+    this.category = "other"; // Default fallback
   }
   
   next();

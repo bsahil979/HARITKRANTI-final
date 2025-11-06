@@ -44,9 +44,8 @@ const generateToken = (id) => {
 // @access  Public
 export const register = async (req, res, next) => {
   try {
-    const { name, email, password, role, phone } = req.body;
+    const { name, email, password, role, phone, address } = req.body;
     const normalizedRole = normalizeRole(role) || "consumer";
-
 
     const userExists = await User.findOne({ email });
     if (userExists) {
@@ -56,14 +55,21 @@ export const register = async (req, res, next) => {
       });
     }
 
-   
-    const user = await User.create({
+    // Build user data object with all provided fields
+    const userData = {
       name,
       email,
       password,
       role: normalizedRole,
       phone,
-    });
+    };
+    
+    // Add address if provided
+    if (address) {
+      userData.address = address;
+    }
+
+    const user = await User.create(userData);
 
     const token = generateToken(user._id);
 
@@ -76,6 +82,7 @@ export const register = async (req, res, next) => {
         email: user.email,
         role: user.role,
         phone: user.phone,
+        address: user.address,
       },
     });
   } catch (error) {

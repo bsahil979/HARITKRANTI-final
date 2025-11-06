@@ -211,18 +211,35 @@ const AddProductPage = () => {
                 name="category"
                 value={formData.category}
                 onChange={handleChange}
-                className={`form-input ${
+                className={`w-full px-3 py-2 border border-gray-300 rounded-lg bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 appearance-none cursor-pointer ${
                   errors.category ? "border-red-500" : ""
-                } pl-3`}
+                }`}
+                style={{
+                  backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`,
+                  backgroundPosition: 'right 0.5rem center',
+                  backgroundRepeat: 'no-repeat',
+                  backgroundSize: '1.5em 1.5em',
+                  paddingRight: '2.5rem'
+                }}
                 required
               >
                 <option value="">Select a category</option>
-                {categories.map((category) => (
-                  <option key={category._id} value={category._id}>
-                    {category.name}
-                  </option>
-                ))}
+                {categories && categories.length > 0 ? (
+                  categories.map((category) => (
+                    <option key={category._id} value={category._id}>
+                      {category.name}
+                    </option>
+                  ))
+                ) : (
+                  <option value="" disabled>No categories available</option>
+                )}
               </select>
+              {categoriesLoading && (
+                <p className="text-gray-500 text-xs mt-1">Loading categories...</p>
+              )}
+              {!categoriesLoading && categories && categories.length === 0 && (
+                <p className="text-yellow-600 text-xs mt-1">No categories found. Please contact admin.</p>
+              )}
               {errors.category && (
                 <p className="text-red-500 text-xs mt-1">{errors.category}</p>
               )}

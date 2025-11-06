@@ -14,15 +14,15 @@ import { GiFarmer } from "react-icons/gi";
 
 const DashboardPage = () => {
   const dispatch = useDispatch();
-  const { users, loading: usersLoading } = useSelector((state) => state.users);
-  const { adminOrders, loading: ordersLoading } = useSelector(
-    (state) => state.orders
+  const { users = [], loading: usersLoading = false } = useSelector((state) => state.users || {});
+  const { adminOrders = [], loading: ordersLoading = false } = useSelector(
+    (state) => state.orders || {}
   );
-  const { categories, loading: categoriesLoading } = useSelector(
-    (state) => state.categories
+  const { categories = [], loading: categoriesLoading = false } = useSelector(
+    (state) => state.categories || {}
   );
-  const { products, loading: productsLoading } = useSelector(
-    (state) => state.products
+  const { products = [], loading: productsLoading = false } = useSelector(
+    (state) => state.products || {}
   );
 
   useEffect(() => {
@@ -31,6 +31,26 @@ const DashboardPage = () => {
     dispatch(getCategories());
     dispatch(getProducts());
   }, [dispatch]);
+
+  // Refresh data periodically
+  useEffect(() => {
+    const interval = setInterval(() => {
+      dispatch(getAllOrders());
+      dispatch(getProducts());
+    }, 60000); // Refresh every minute
+    
+    return () => clearInterval(interval);
+  }, [dispatch]);
+
+  // Debug logging
+  useEffect(() => {
+    console.log("Dashboard State:", {
+      users: users?.length || 0,
+      adminOrders: adminOrders?.length || 0,
+      categories: categories?.length || 0,
+      products: products?.length || 0,
+    });
+  }, [users, adminOrders, categories, products]);
 
   // Count users by role
   const userCounts = {
@@ -335,21 +355,21 @@ const DashboardPage = () => {
                           </Link>
                         </div>
                       </td>
-                      <td className="py-3">{product.farmer?.name}</td>
+                      <td className="py-3">{product.farmer?.name || product.farmerId?.name || "Unknown"}</td>
                       <td className="text-center py-3">
                         ₨{(product.pricePerKg || product.price || 0).toFixed(2)}
                       </td>
                       <td className="text-right py-3">
                         <span
                           className={`${
-                            product.quantityAvailable === 0
+                            (product.quantityAvailable || product.quantity || 0) === 0
                               ? "text-red-500"
-                              : product.quantityAvailable < 5
+                              : (product.quantityAvailable || product.quantity || 0) < 5
                               ? "text-orange-500"
                               : "text-green-500"
                           } font-medium`}
                         >
-                          {product.quantityAvailable} {product.unit}
+                          {product.quantityAvailable || product.quantity || 0} {product.unit || "kg"}
                         </span>
                       </td>
                     </tr>

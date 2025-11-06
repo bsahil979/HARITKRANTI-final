@@ -8,6 +8,9 @@ import orderReducer from "./slices/orderSlice"
 import messageReducer from "./slices/messageSlice"
 import farmerReducer from "./slices/farmerSlice"
 import userReducer from "./slices/userSlice"
+import purchaseReducer from "./slices/purchaseSlice"
+import inventoryReducer from "./slices/inventorySlice"
+import notificationReducer from "./slices/notificationSlice"
 
 export const store = configureStore({
   reducer: {
@@ -20,5 +23,8 @@ export const store = configureStore({
     messages: messageReducer,
     farmers: farmerReducer,
     users: userReducer,
+    purchases: purchaseReducer,
+    inventory: inventoryReducer,
+    notifications: notificationReducer,
   },
 })

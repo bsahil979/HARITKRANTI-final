@@ -8,7 +8,7 @@ import { FaSearch, FaEdit, FaTrash, FaBox, FaEye, FaCheck, FaTimes } from "react
 
 const ProductsPage = () => {
   const dispatch = useDispatch();
-  const { products, loading } = useSelector((state) => state.products);
+  const { products = [], loading = false } = useSelector((state) => state.products || {});
 
   const [searchTerm, setSearchTerm] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("all");
@@ -23,7 +23,7 @@ const ProductsPage = () => {
   }, [dispatch]);
 
   useEffect(() => {
-    if (products) {
+    if (products && Array.isArray(products)) {
       let filtered = [...products];
 
       if (categoryFilter !== "all") {
@@ -47,6 +47,8 @@ const ProductsPage = () => {
       }
 
       setFilteredProducts(filtered);
+    } else {
+      setFilteredProducts([]);
     }
   }, [products, searchTerm, categoryFilter, statusFilter]);
 
@@ -76,7 +78,9 @@ const ProductsPage = () => {
   }
 
   // Get unique categories
-  const categories = [...new Set(products.map((p) => p.category).filter(Boolean))];
+  const categories = products && Array.isArray(products) 
+    ? [...new Set(products.map((p) => p.category).filter(Boolean))]
+    : [];
 
   return (
     <div className="container mx-auto px-4 py-8">

@@ -52,6 +52,9 @@ import AdminCategoriesPage from "./pages/admin/CategoriesPage";
 import AdminOrdersPage from "./pages/admin/OrdersPage";
 import AdminProductsPage from "./pages/admin/ProductsPage";
 import AdminListingsPage from "./pages/admin/ListingsPage";
+import AdminPurchasePage from "./pages/admin/PurchasePage";
+import AdminInventoryPage from "./pages/admin/InventoryPage";
+import AdminMarketplacePage from "./pages/admin/AdminMarketplacePage";
 import AdminMessagesPage from "./pages/admin/MessagesPage";
 import AdminReportsPage from "./pages/admin/ReportsPage";
 import AdminAnalyticsPage from "./pages/admin/AnalyticsPage";
@@ -121,6 +124,9 @@ function App() {
               <Route path="admin/users" element={<AdminUsersPage />} />
               <Route path="admin/products" element={<AdminProductsPage />} />
               <Route path="admin/listings" element={<AdminListingsPage />} />
+              <Route path="admin/purchase" element={<AdminPurchasePage />} />
+              <Route path="admin/inventory" element={<AdminInventoryPage />} />
+              <Route path="admin/marketplace" element={<AdminMarketplacePage />} />
               <Route path="admin/categories" element={<AdminCategoriesPage />} />
               <Route path="admin/orders" element={<AdminOrdersPage />} />
               <Route path="admin/messages" element={<AdminMessagesPage />} />

@@ -2,14 +2,14 @@
 
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { getAllOrders, updateOrderStatus } from "../../redux/slices/orderSlice";
+import { getAllOrders, getAdminOrders, updateOrderStatus } from "../../redux/slices/orderSlice";
 import OrderItem from "../../components/OrderItem";
 import Loader from "../../components/Loader";
 import { FaSearch, FaFilter, FaShoppingBasket } from "react-icons/fa";
 
 const OrdersPage = () => {
   const dispatch = useDispatch();
-  const { adminOrders, loading } = useSelector((state) => state.orders);
+  const { adminOrders = [], loading } = useSelector((state) => state.orders);
 
   const [searchTerm, setSearchTerm] = useState("");
   const [filter, setFilter] = useState("all");
@@ -19,7 +19,8 @@ const OrdersPage = () => {
   const [filteredOrders, setFilteredOrders] = useState([]);
 
   useEffect(() => {
-    dispatch(getAllOrders());
+    dispatch(getAllOrders()); // All orders for admin overview
+    dispatch(getAdminOrders()); // Admin's marketplace orders
   }, [dispatch]);
 
   useEffect(() => {
@@ -33,11 +34,12 @@ const OrdersPage = () => {
       if (searchTerm) {
         filtered = filtered.filter(
           (order) =>
-            order._id.includes(searchTerm) ||
-            order.consumer.name
-              .toLowerCase()
+            order._id?.toString().includes(searchTerm) ||
+            order.consumer?.name
+              ?.toLowerCase()
               .includes(searchTerm.toLowerCase()) ||
-            order.farmer.name.toLowerCase().includes(searchTerm.toLowerCase())
+            order.seller?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            order.farmer?.name?.toLowerCase().includes(searchTerm.toLowerCase())
         );
       }
 

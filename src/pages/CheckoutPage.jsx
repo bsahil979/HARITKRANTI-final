@@ -123,13 +123,21 @@ const CheckoutPage = () => {
       return;
     }
 
+    // Determine seller type from cart items
+    const isAdminOrder = cartItems.length > 0 && cartItems[0].isAdminProduct;
+    const sellerType = isAdminOrder ? "admin" : "farmer";
+
     const orderData = {
-      farmer: farmerId,
+      seller: farmerId,
+      sellerType: sellerType,
       items: cartItems.map((item) => ({
-        product: item.productId,
+        productId: item.isAdminProduct ? null : item.productId,
+        adminProductId: item.isAdminProduct ? item.productId : null,
+        isAdminProduct: item.isAdminProduct || false,
         quantity: item.quantity,
         price: item.price,
       })),
+      orderType: orderType,
       notes: orderDetails.notes,
     };
 

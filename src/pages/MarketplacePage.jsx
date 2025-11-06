@@ -3,13 +3,15 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getProducts } from "../redux/slices/productSlice";
+import { getAdminProducts } from "../redux/slices/inventorySlice";
 import ProductCard from "../components/ProductCard";
 import Loader from "../components/Loader";
 import { FaStore, FaSeedling } from "react-icons/fa";
 
 const MarketplacePage = () => {
   const dispatch = useDispatch();
-  const { products = [], loading } = useSelector((state) => state.products || {});
+  const { products = [], loading: productsLoading } = useSelector((state) => state.products || {});
+  const { adminProducts = [], loading: adminLoading } = useSelector((state) => state.inventory || {});
 
   // UI state
   const [search, setSearch] = useState("");
@@ -18,20 +20,53 @@ const MarketplacePage = () => {
 
   useEffect(() => {
     dispatch(getProducts());
+    dispatch(getAdminProducts({ status: "available" }));
   }, [dispatch]);
+
+  // Combine farmer products and admin products
+  const allProducts = useMemo(() => {
+    const farmerProducts = (products || []).map((p) => ({
+      ...p,
+      isAdminProduct: false,
+      seller: p.farmer || p.farmerId,
+      sellerType: "farmer",
+    }));
+
+    const adminProds = (adminProducts || []).map((p) => ({
+      ...p,
+      _id: p._id,
+      name: p.name,
+      title: p.name,
+      price: p.price || p.pricePerKg,
+      pricePerKg: p.pricePerKg || p.price,
+      quantity: p.quantity,
+      quantityAvailable: p.quantity,
+      category: p.category,
+      description: p.description,
+      images: p.images,
+      imageUrl: p.images?.[0],
+      unit: p.unit || "kg",
+      isAdminProduct: true,
+      seller: p.admin,
+      sellerType: "admin",
+      farmer: p.admin, // For compatibility with ProductCard
+    }));
+
+    return [...farmerProducts, ...adminProds];
+  }, [products, adminProducts]);
 
   // derive categories from products to populate the category dropdown
   const categories = useMemo(() => {
     const setCat = new Set();
-    (products || []).forEach((p) => {
+    allProducts.forEach((p) => {
       if (p.category) setCat.add(p.category);
     });
     return ["all", ...Array.from(setCat)];
-  }, [products]);
+  }, [allProducts]);
 
-  // filter + sort the redux products
+  // filter + sort the products
   const filtered = useMemo(() => {
-    let arr = (products || []).slice();
+    let arr = [...allProducts];
 
     // filter by category
     if (category !== "all") {
@@ -68,9 +103,9 @@ const MarketplacePage = () => {
     }
 
     return arr;
-  }, [products, search, category, sort]);
+  }, [allProducts, search, category, sort]);
 
-  if (loading) {
+  if (productsLoading || adminLoading) {
     return <Loader />;
   }
 

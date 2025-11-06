@@ -7,6 +7,10 @@ import listingRouter from "./routes/listing.routes.js";
 import authRouter from "./routes/auth.routes.js";
 import userRouter from "./routes/user.routes.js";
 import productRouter from "./routes/product.routes.js";
+import purchaseRouter from "./routes/purchase.routes.js";
+import inventoryRouter from "./routes/inventory.routes.js";
+import orderRouter from "./routes/order.routes.js";
+import notificationRouter from "./routes/notification.routes.js";
 import { errorHandler, notFound } from "./middleware/error.js";
 
 const app = express();
@@ -20,6 +24,10 @@ app.use("/api/auth", authRouter);
 app.use("/api/users", userRouter);
 app.use("/api/listings", listingRouter);
 app.use("/api/products", productRouter);
+app.use("/api/purchases", purchaseRouter);
+app.use("/api/inventory", inventoryRouter);
+app.use("/api/orders", orderRouter);
+app.use("/api/notifications", notificationRouter);
 
 app.use(notFound);
 app.use(errorHandler);

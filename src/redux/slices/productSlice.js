@@ -183,8 +183,15 @@ const productSlice = createSlice({
       })
       .addCase(getProducts.fulfilled, (state, action) => {
         state.loading = false;
-        const apiProducts = Array.isArray(action.payload.data) ? action.payload.data : [];
-        state.products = apiProducts.length > 0 ? apiProducts : fallbackProducts;
+        const apiProducts = Array.isArray(action.payload?.data) ? action.payload.data : [];
+        // Map products to include farmer data in consistent format
+        state.products = apiProducts.map((product) => ({
+          ...product,
+          farmer: product.farmerId || product.farmer,
+          images: product.images || (product.imageUrl ? [product.imageUrl] : []),
+          pricePerKg: product.pricePerKg || product.price,
+          quantityAvailable: product.quantityAvailable || product.quantity,
+        }));
       })
       .addCase(getProducts.rejected, (state, action) => {
         state.loading = false;

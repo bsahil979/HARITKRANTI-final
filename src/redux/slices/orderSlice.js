@@ -126,7 +126,26 @@ export const getAllOrders = createAsyncThunk("orders/getAllOrders", async (_, { 
       },
     }
 
-    const { data } = await axios.get(`${API_URL}/orders`, config)
+    const { data } = await axios.get(`${API_URL}/orders/all`, config)
+    return data
+  } catch (error) {
+    const message = error.response && error.response.data.message ? error.response.data.message : error.message
+    return rejectWithValue(message)
+  }
+})
+
+// Get admin orders (for admin's marketplace products)
+export const getAdminOrders = createAsyncThunk("orders/getAdminOrders", async (_, { rejectWithValue, getState }) => {
+  try {
+    const token = getState().auth.token
+
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+
+    const { data } = await axios.get(`${API_URL}/orders/admin`, config)
     return data
   } catch (error) {
     const message = error.response && error.response.data.message ? error.response.data.message : error.message
@@ -256,6 +275,19 @@ const orderSlice = createSlice({
         state.adminOrders = action.payload.data
       })
       .addCase(getAllOrders.rejected, (state, action) => {
+        state.loading = false
+        state.error = action.payload
+      })
+      // Get admin orders
+      .addCase(getAdminOrders.pending, (state) => {
+        state.loading = true
+        state.error = null
+      })
+      .addCase(getAdminOrders.fulfilled, (state, action) => {
+        state.loading = false
+        state.adminOrders = action.payload.data
+      })
+      .addCase(getAdminOrders.rejected, (state, action) => {
         state.loading = false
         state.error = action.payload
       })

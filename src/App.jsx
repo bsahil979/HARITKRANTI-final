@@ -45,10 +45,17 @@ import FarmerOrdersPage from "./pages/farmer/OrdersPage";
 import FarmerProfilePage from "./pages/farmer/ProfilePage";
 
 // Admin Pages
+import AdminLayout from "./components/AdminLayout";
 import AdminDashboardPage from "./pages/admin/DashboardPage";
 import AdminUsersPage from "./pages/admin/UsersPage";
 import AdminCategoriesPage from "./pages/admin/CategoriesPage";
 import AdminOrdersPage from "./pages/admin/OrdersPage";
+import AdminProductsPage from "./pages/admin/ProductsPage";
+import AdminListingsPage from "./pages/admin/ListingsPage";
+import AdminMessagesPage from "./pages/admin/MessagesPage";
+import AdminReportsPage from "./pages/admin/ReportsPage";
+import AdminAnalyticsPage from "./pages/admin/AnalyticsPage";
+import AdminSettingsPage from "./pages/admin/SettingsPage";
 
 function App() {
   const dispatch = useDispatch();
@@ -109,10 +116,18 @@ function App() {
 
           {/* Admin Routes */}
           <Route element={<AdminRoute />}>
-            <Route path="admin/dashboard" element={<AdminDashboardPage />} />
-            <Route path="admin/users" element={<AdminUsersPage />} />
-            <Route path="admin/categories" element={<AdminCategoriesPage />} />
-            <Route path="admin/orders" element={<AdminOrdersPage />} />
+            <Route element={<AdminLayout />}>
+              <Route path="admin/dashboard" element={<AdminDashboardPage />} />
+              <Route path="admin/users" element={<AdminUsersPage />} />
+              <Route path="admin/products" element={<AdminProductsPage />} />
+              <Route path="admin/listings" element={<AdminListingsPage />} />
+              <Route path="admin/categories" element={<AdminCategoriesPage />} />
+              <Route path="admin/orders" element={<AdminOrdersPage />} />
+              <Route path="admin/messages" element={<AdminMessagesPage />} />
+              <Route path="admin/reports" element={<AdminReportsPage />} />
+              <Route path="admin/analytics" element={<AdminAnalyticsPage />} />
+              <Route path="admin/settings" element={<AdminSettingsPage />} />
+            </Route>
           </Route>
 
           {/* 404 Route */}

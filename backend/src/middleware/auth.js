@@ -66,8 +66,3 @@ export const authorize = (...roles) => {
     next();
   };
 };
-<<<<<<< HEAD
-=======
-
-
->>>>>>> dda2e67 (Backup current local fixes before revert)

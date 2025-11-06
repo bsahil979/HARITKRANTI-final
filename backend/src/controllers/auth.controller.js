@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
 import User from "../models/User.js";
 
-// Normalize role values coming from the client
+
 const normalizeRole = (role) => {
   if (role === undefined || role === null) return undefined;
   const normalized = String(role).trim().toLowerCase();
@@ -47,7 +47,7 @@ export const register = async (req, res, next) => {
     const { name, email, password, role, phone } = req.body;
     const normalizedRole = normalizeRole(role) || "consumer";
 
-    // Check if user exists
+
     const userExists = await User.findOne({ email });
     if (userExists) {
       return res.status(400).json({
@@ -56,7 +56,7 @@ export const register = async (req, res, next) => {
       });
     }
 
-    // Create user
+   
     const user = await User.create({
       name,
       email,
@@ -150,8 +150,3 @@ export const getMe = async (req, res, next) => {
     next(error);
   }
 };
-<<<<<<< HEAD
-=======
-
-
->>>>>>> dda2e67 (Backup current local fixes before revert)

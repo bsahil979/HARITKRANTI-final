@@ -4,13 +4,14 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { login, clearError } from "../redux/slices/authSlice";
-import { FaEnvelope, FaLock, FaSeedling } from "react-icons/fa";
+import { FaEnvelope, FaLock, FaSeedling, FaEye, FaEyeSlash } from "react-icons/fa";
 import Loader from "../components/Loader";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [role, setRole] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -58,7 +59,7 @@ const LoginPage = () => {
             <FaSeedling className="text-green-500 text-4xl" />
           </div>
           <h2 className="mt-6 text-3xl font-extrabold text-gray-900">
-            Sign in as {role ? (role === "farmer" ? "Farmer" : "Customer") : "User"}
+            Sign in as {role ? (role === "farmer" ? "Farmer" : role === "admin" ? "Admin" : "Customer") : "User"}
           </h2>
           <p className="mt-2 text-sm text-gray-600">
             Or{" "}
@@ -121,14 +122,26 @@ const LoginPage = () => {
                 <input
                   id="password"
                   name="password"
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   autoComplete="current-password"
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="form-input pl-10"
+                  className="form-input pl-10 pr-10"
                   placeholder="Password"
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
+                  tabIndex={-1}
+                >
+                  {showPassword ? (
+                    <FaEyeSlash className="text-lg" />
+                  ) : (
+                    <FaEye className="text-lg" />
+                  )}
+                </button>
               </div>
             </div>
           </div>

@@ -63,8 +63,6 @@ connectDB(URI)
 .catch((err) => {
 console.error("Mongo connection error:", err);
 process.exit(1);
-<<<<<<< HEAD
+
 });
-=======
-});
->>>>>>> dda2e67 (Backup current local fixes before revert)
+

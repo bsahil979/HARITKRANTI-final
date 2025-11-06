@@ -1,7 +1,7 @@
 "use client";
 
 import { Link } from "react-router-dom";
-import { FaUser, FaSeedling, FaUserShield } from "react-icons/fa";
+import { FaUser, FaSeedling } from "react-icons/fa";
 
 const RoleSelectionPage = () => {
   return (
@@ -32,7 +32,7 @@ const RoleSelectionPage = () => {
           Select Your Role
         </h2>
         <p className="text-gray-700 mb-6">
-          Please select your role to proceed.
+          Choose to login or register as:
         </p>
 
         <div className="flex flex-col gap-4 mt-8">
@@ -41,22 +41,46 @@ const RoleSelectionPage = () => {
             className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-lg font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
           >
             <FaSeedling className="mr-3 text-xl" />
-            Farmer
+            Login as Farmer
           </Link>
           <Link
             to="/login?role=customer"
             className="group relative w-full flex justify-center py-3 px-4 border border-green-600 text-lg font-medium rounded-md text-green-600 bg-white hover:bg-green-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
           >
             <FaUser className="mr-3 text-xl" />
-            Customer
+            Login as Customer
           </Link>
+        </div>
+        <div className="mt-6 pt-6 border-t border-gray-300 text-center">
+          <p className="text-sm text-gray-700 mb-2">
+            Admin? Login directly with your credentials
+          </p>
           <Link
-            to="/login?role=admin"
-            className="group relative w-full flex justify-center py-3 px-4 border border-purple-600 text-lg font-medium rounded-md text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500"
+            to="/login"
+            className="text-sm font-medium text-green-600 hover:text-green-700"
           >
-            <FaUserShield className="mr-3 text-xl" />
-            Admin
+            Login here (Admin, Farmer, or Customer)
           </Link>
+        </div>
+        <div className="mt-4 text-center">
+          <p className="text-sm text-gray-700 mb-2">
+            New user? Register as:
+          </p>
+          <div className="flex gap-2 justify-center">
+            <Link
+              to="/register?role=farmer"
+              className="text-sm font-medium text-green-600 hover:text-green-700"
+            >
+              Register as Farmer
+            </Link>
+            <span className="text-gray-500">|</span>
+            <Link
+              to="/register?role=customer"
+              className="text-sm font-medium text-green-600 hover:text-green-700"
+            >
+              Register as Customer
+            </Link>
+          </div>
         </div>
       </div>
     </div>

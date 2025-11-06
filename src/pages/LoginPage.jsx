@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { login, clearError } from "../redux/slices/authSlice";
-import { FaEnvelope, FaLock, FaSeedling, FaEye, FaEyeSlash } from "react-icons/fa";
+import { FaEnvelope, FaLock, FaSeedling, FaEye, FaEyeSlash, FaUser } from "react-icons/fa";
 import Loader from "../components/Loader";
 
 const LoginPage = () => {
@@ -27,9 +27,8 @@ const LoginPage = () => {
     const selectedRole = queryParams.get("role");
     if (selectedRole) {
       setRole(selectedRole);
-    } else {
-      navigate("/select-role"); // Redirect to role selection if no role is specified
     }
+    // Allow login without role selection - role will be auto-detected from user account
 
     if (isAuthenticated) {
       if (user?.role === "admin") {
@@ -44,7 +43,13 @@ const LoginPage = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    dispatch(login({ email, password, role }));
+    // Only send role if it's explicitly selected (farmer/customer)
+    // Admin role will be auto-detected from the user's account
+    const loginData = { email, password };
+    if (role && role !== "admin") {
+      loginData.role = role;
+    }
+    dispatch(login(loginData));
   };
 
   if (loading) {
@@ -77,19 +82,51 @@ const LoginPage = () => {
             <FaSeedling className="text-green-600 text-4xl" />
           </div>
           <h2 className="text-2xl font-bold text-green-800 mb-2">
-            Welcome Back
+            {role ? `Sign in as ${role === "farmer" ? "Farmer" : role === "customer" ? "Customer" : "User"}` : "Welcome Back"}
           </h2>
-          <p className="text-gray-700 mb-4">
-            Login to your HaritKranti account
-          </p>
+          
+          {!role && (
+            <div className="mt-4 mb-4 flex gap-3 justify-center">
+              <Link
+                to="/login?role=farmer"
+                className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-medium"
+              >
+                <FaSeedling />
+                Login as Farmer
+              </Link>
+              <Link
+                to="/login?role=customer"
+                className="flex items-center gap-2 px-4 py-2 border border-green-600 text-green-600 rounded-lg hover:bg-green-50 transition-colors text-sm font-medium"
+              >
+                <FaUser />
+                Login as Customer
+              </Link>
+            </div>
+          )}
+
           <p className="text-sm text-gray-700">
-            Or{" "}
-            <Link
-              to={role ? `/register?role=${role}` : "/select-role"}
-              className="font-medium text-green-600 hover:text-green-700"
-            >
-              create a new account
-            </Link>
+            {!role && (
+              <>
+                Don't have an account?{" "}
+                <Link
+                  to="/select-role"
+                  className="font-medium text-green-600 hover:text-green-700"
+                >
+                  Register here
+                </Link>
+              </>
+            )}
+            {role && role !== "admin" && (
+              <>
+                Or{" "}
+                <Link
+                  to={`/register?role=${role}`}
+                  className="font-medium text-green-600 hover:text-green-700"
+                >
+                  create a new account
+                </Link>
+              </>
+            )}
           </p>
         </div>
 

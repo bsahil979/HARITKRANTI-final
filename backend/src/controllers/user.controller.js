@@ -52,24 +52,49 @@ export const getUser = async (req, res, next) => {
 // @access  Private
 export const updateProfile = async (req, res, next) => {
   try {
-    const fieldsToUpdate = {
-      name: req.body.name,
-      phone: req.body.phone,
-      address: req.body.address,
-      profileImage: req.body.profileImage, // Keep for backward compatibility
-      profileImageRef: req.body.profileImageRef, // New Image model reference
-      farmDetails: req.body.farmDetails,
-      preferences: req.body.preferences,
-    };
+    // Build update object with all possible fields
+    const fieldsToUpdate = {};
     
-    // Remove undefined fields
-    Object.keys(fieldsToUpdate).forEach(key => 
-      fieldsToUpdate[key] === undefined && delete fieldsToUpdate[key]
-    );
+    // Basic user fields
+    if (req.body.name !== undefined) fieldsToUpdate.name = req.body.name;
+    if (req.body.phone !== undefined) fieldsToUpdate.phone = req.body.phone;
+    if (req.body.address !== undefined) fieldsToUpdate.address = req.body.address;
+    if (req.body.profileImage !== undefined) fieldsToUpdate.profileImage = req.body.profileImage;
+    if (req.body.profileImageRef !== undefined) fieldsToUpdate.profileImageRef = req.body.profileImageRef;
+    if (req.body.preferences !== undefined) fieldsToUpdate.preferences = req.body.preferences;
+    
+    // Farm details (basic)
+    if (req.body.farmDetails !== undefined) fieldsToUpdate.farmDetails = req.body.farmDetails;
+    
+    // Extended farmer profile fields
+    if (req.body.farmerProfile !== undefined) {
+      fieldsToUpdate.farmerProfile = req.body.farmerProfile;
+    } else {
+      // Handle individual farmer profile fields for backward compatibility
+      if (req.body.farmName !== undefined || req.body.description !== undefined || 
+          req.body.farmingPractices !== undefined || req.body.establishedYear !== undefined ||
+          req.body.socialMedia !== undefined || req.body.businessHours !== undefined ||
+          req.body.acceptsPickup !== undefined || req.body.acceptsDelivery !== undefined ||
+          req.body.deliveryRadius !== undefined) {
+        fieldsToUpdate.farmerProfile = {};
+        if (req.body.farmName !== undefined) fieldsToUpdate.farmerProfile.farmName = req.body.farmName;
+        if (req.body.description !== undefined) fieldsToUpdate.farmerProfile.description = req.body.description;
+        if (req.body.farmingPractices !== undefined) fieldsToUpdate.farmerProfile.farmingPractices = req.body.farmingPractices;
+        if (req.body.establishedYear !== undefined) fieldsToUpdate.farmerProfile.establishedYear = req.body.establishedYear;
+        if (req.body.socialMedia !== undefined) fieldsToUpdate.farmerProfile.socialMedia = req.body.socialMedia;
+        if (req.body.businessHours !== undefined) fieldsToUpdate.farmerProfile.businessHours = req.body.businessHours;
+        if (req.body.acceptsPickup !== undefined) fieldsToUpdate.farmerProfile.acceptsPickup = req.body.acceptsPickup;
+        if (req.body.acceptsDelivery !== undefined) fieldsToUpdate.farmerProfile.acceptsDelivery = req.body.acceptsDelivery;
+        if (req.body.deliveryRadius !== undefined) fieldsToUpdate.farmerProfile.deliveryRadius = req.body.deliveryRadius;
+      }
+    }
+    
+    // Use $set to update nested fields properly
+    const updateQuery = { $set: fieldsToUpdate };
     
     const user = await User.findByIdAndUpdate(
       req.user._id,
-      fieldsToUpdate,
+      updateQuery,
       { new: true, runValidators: true }
     )
       .populate("profileImageRef", "url storageType displayUrl");

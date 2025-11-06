@@ -1,10 +1,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { FaLeaf, FaCloudSun, FaFlask, FaRuler, FaMapMarkerAlt, FaThermometerHalf, FaTint, FaWind, FaSeedling, FaChartLine, FaExclamationTriangle, FaCheckCircle, FaInfoCircle } from "react-icons/fa";
+import { FaLeaf, FaCloudSun, FaFlask, FaRuler, FaMapMarkerAlt, FaThermometerHalf, FaTint, FaWind, FaSeedling, FaChartLine, FaExclamationTriangle, FaCheckCircle, FaInfoCircle, FaHistory } from "react-icons/fa";
 import axios from "axios";
 import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
+import { Link } from "react-router-dom";
 
 const API_URL = import.meta.env.VITE_API_URL || "/api";
 
@@ -254,12 +255,29 @@ const CropRecommendationPage = () => {
 
   return (
     <div className="container mx-auto px-4 py-24">
-      <div className="text-center mb-12">
-        <FaLeaf className="text-green-500 text-5xl mx-auto mb-4" />
-        <h1 className="text-4xl font-bold mb-4">Crop Recommendation</h1>
-        <p className="text-lg text-gray-600">
-          Get AI-powered crop recommendations based on your soil, weather, and location data.
-        </p>
+      <div className="mb-12">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex-1"></div>
+          <div className="text-center flex-1">
+            <FaLeaf className="text-green-500 text-5xl mx-auto mb-4" />
+            <h1 className="text-4xl font-bold mb-4">Crop Recommendation</h1>
+            <p className="text-lg text-gray-600">
+              Get AI-powered crop recommendations based on your soil, weather, and location data.
+            </p>
+          </div>
+          <div className="flex-1 flex justify-end">
+            {user && (
+              <Link
+                to="/crop-recommendation/history"
+                className="bg-green-100 text-green-700 px-4 py-2 rounded-lg hover:bg-green-200 transition-colors flex items-center gap-2"
+                title="View Recommendation History"
+              >
+                <FaHistory />
+                <span className="hidden sm:inline">History</span>
+              </Link>
+            )}
+          </div>
+        </div>
       </div>
 
       {/* Weather Data Display */}

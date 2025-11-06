@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import Product from "../models/Product.js";
 import { uploadBufferToCloudinary } from "../utils/upload.js";
 
@@ -46,18 +47,21 @@ export const createProduct = async (req, res, next) => {
       quantity: quantity || quantityKg,
       quantityKg: quantityKg || quantity,
       quantityAvailable: quantityKg || quantity || 0,
-      category: category || "other",
+      category: category || "other", // Can be ObjectId or string enum
+      categoryRef: category && mongoose.Types.ObjectId.isValid(category) ? category : undefined,
       imageUrl: imageUrl || (imageArray.length > 0 ? imageArray[0] : ""),
       images: imageArray,
       farmerId: userId,
       farmer: userId,
       location: location || {},
-      status: status || "available",
+      status: status || "pending", // Default to pending - requires admin approval
+      isListed: false, // Not listed in marketplace until admin approves
     });
 
     await doc.populate("farmerId", "name email phone profileImage profileImageRef address");
     await doc.populate("farmer", "name email phone profileImage profileImageRef address");
     await doc.populate("imageRefs", "url storageType displayUrl");
+    await doc.populate("categoryRef", "name icon description");
     
     res.status(201).json({ success: true, data: doc });
   } catch (err) {
@@ -95,6 +99,16 @@ export const listProducts = async (req, res, next) => {
     // Farmer filter
     if (farmer) filter.farmerId = farmer;
     
+    // For public marketplace, only show listed products
+    // Admin can see all products (including pending/unlisted)
+    const isAdmin = req.user && req.user.role === "admin";
+    if (!isAdmin) {
+      filter.isListed = true; // Only show approved/listed products in marketplace
+      if (!status) {
+        filter.status = "available"; // Only show available products (unless status filter is explicitly set)
+      }
+    }
+    
     // Location filters
     if (state) filter["location.state"] = state;
     if (district) filter["location.district"] = district;
@@ -120,6 +134,7 @@ export const listProducts = async (req, res, next) => {
           .populate("farmerId", "name email phone profileImage profileImageRef address")
           .populate("farmer", "name email phone profileImage profileImageRef address")
           .populate("imageRefs", "url storageType displayUrl")
+          .populate("categoryRef", "name icon description")
           .sort(sort)
           .skip(skip)
           .limit(Number(limit));
@@ -141,7 +156,8 @@ export const getProduct = async (req, res, next) => {
         const doc = await Product.findById(id)
           .populate("farmerId", "name email phone profileImage profileImageRef address")
           .populate("farmer", "name email phone profileImage profileImageRef address")
-          .populate("imageRefs", "url storageType displayUrl");
+          .populate("imageRefs", "url storageType displayUrl")
+          .populate("categoryRef", "name icon description");
     
     if (!doc) {
       return res.status(404).json({ success: false, message: "Product not found" });
@@ -168,10 +184,17 @@ export const updateProduct = async (req, res, next) => {
       return res.status(403).json({ success: false, message: "Not authorized" });
     }
     
-        const updated = await Product.findByIdAndUpdate(id, req.body, { new: true, runValidators: true })
+    // Handle category ObjectId
+    const updateData = { ...req.body };
+    if (updateData.category && mongoose.Types.ObjectId.isValid(updateData.category)) {
+      updateData.categoryRef = updateData.category;
+    }
+    
+        const updated = await Product.findByIdAndUpdate(id, updateData, { new: true, runValidators: true })
           .populate("farmerId", "name email phone profileImage profileImageRef address")
           .populate("farmer", "name email phone profileImage profileImageRef address")
-          .populate("imageRefs", "url storageType displayUrl");
+          .populate("imageRefs", "url storageType displayUrl")
+          .populate("categoryRef", "name icon description");
     
     res.json({ success: true, data: updated });
   } catch (err) {
@@ -210,6 +233,7 @@ export const getFarmerProducts = async (req, res, next) => {
         const query = Product.find(filter)
           .populate("farmerId", "name email phone profileImage profileImageRef address")
           .populate("imageRefs", "url storageType displayUrl")
+          .populate("categoryRef", "name icon description")
           .sort("-createdAt")
           .skip(skip)
           .limit(Number(limit));
@@ -220,6 +244,60 @@ export const getFarmerProducts = async (req, res, next) => {
     ]);
     
     res.json({ success: true, data, total, page: Number(page), limit: Number(limit) });
+  } catch (err) {
+    next(err);
+  }
+};
+
+// @desc    Approve and list product in marketplace (Admin only)
+// @route   PUT /api/products/:id/approve
+// @access  Private/Admin
+export const approveProduct = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { approvedPrice, pricePerKg, price } = req.body;
+    
+    if (req.user.role !== "admin") {
+      return res.status(403).json({ success: false, message: "Admin access required" });
+    }
+    
+    const product = await Product.findById(id);
+    if (!product) {
+      return res.status(404).json({ success: false, message: "Product not found" });
+    }
+    
+    // Update product with approved price and list it
+    const updateData = {
+      isListed: true,
+      status: "available"
+    };
+    
+    // Set approved price (admin can override farmer's price)
+    if (approvedPrice !== undefined) {
+      updateData.approvedPrice = approvedPrice;
+      updateData.pricePerKg = approvedPrice;
+      updateData.price = approvedPrice;
+    } else if (pricePerKg !== undefined) {
+      updateData.approvedPrice = pricePerKg;
+      updateData.pricePerKg = pricePerKg;
+      updateData.price = pricePerKg;
+    } else if (price !== undefined) {
+      updateData.approvedPrice = price;
+      updateData.pricePerKg = price;
+      updateData.price = price;
+    }
+    
+    const updated = await Product.findByIdAndUpdate(id, updateData, { new: true, runValidators: true })
+      .populate("farmerId", "name email phone profileImage profileImageRef address")
+      .populate("farmer", "name email phone profileImage profileImageRef address")
+      .populate("imageRefs", "url storageType displayUrl")
+      .populate("categoryRef", "name icon description");
+    
+    res.json({ 
+      success: true, 
+      message: "Product approved and listed in marketplace",
+      data: updated 
+    });
   } catch (err) {
     next(err);
   }

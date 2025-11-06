@@ -56,12 +56,36 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
-    // For farmers
+    // For farmers - Basic farm details
     farmDetails: {
       farmName: String,
       farmSize: String,
       crops: [String],
       certification: [String],
+    },
+    // Extended farmer profile fields
+    farmerProfile: {
+      farmName: String,
+      description: String,
+      farmingPractices: [String],
+      establishedYear: String,
+      socialMedia: {
+        facebook: String,
+        instagram: String,
+        twitter: String,
+      },
+      businessHours: {
+        monday: { open: String, close: String },
+        tuesday: { open: String, close: String },
+        wednesday: { open: String, close: String },
+        thursday: { open: String, close: String },
+        friday: { open: String, close: String },
+        saturday: { open: String, close: String },
+        sunday: { open: String, close: String },
+      },
+      acceptsPickup: { type: Boolean, default: false },
+      acceptsDelivery: { type: Boolean, default: false },
+      deliveryRadius: { type: Number, default: 0 },
     },
     // For consumers
     preferences: {

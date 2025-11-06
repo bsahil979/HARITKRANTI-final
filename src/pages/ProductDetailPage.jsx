@@ -216,11 +216,29 @@ const ProductDetailPage = () => {
             )}
           </div>
 
-          <div className="bg-gray-50 rounded-lg mb-6">
-            <h3 className="text-lg font-semibold mb-2">Farmer Information</h3>
-            <div className="flex items-center mb-2">
-              <FaUser className="text-green-500 mr-2" />
-              <span>{product.farmer?.name}</span>
+          <div className="bg-gray-50 rounded-lg mb-6 p-4">
+            <h3 className="text-lg font-semibold mb-3">Farmer Information</h3>
+            <div className="flex items-center space-x-3 mb-3">
+              {product.farmer?.profileImage ? (
+                <img
+                  src={product.farmer.profileImage}
+                  alt={product.farmer?.name || "Farmer"}
+                  className="w-12 h-12 rounded-full object-cover border-2 border-green-200"
+                  onError={(e) => {
+                    e.target.style.display = 'none';
+                    if (e.target.nextSibling) e.target.nextSibling.style.display = 'flex';
+                  }}
+                />
+              ) : null}
+              <div className={`w-12 h-12 rounded-full bg-green-100 flex items-center justify-center border-2 border-green-200 ${product.farmer?.profileImage ? 'hidden' : 'flex'}`}>
+                <FaUser className="text-green-500" />
+              </div>
+              <div>
+                <div className="flex items-center">
+                  <FaUser className="text-green-500 mr-2" />
+                  <span className="font-medium">{product.farmer?.name}</span>
+                </div>
+              </div>
             </div>
             {product.farmer?.address && (
               <div className="flex items-center mb-2">

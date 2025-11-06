@@ -130,19 +130,41 @@ const FarmerDetailPage = () => {
           {/* Profile Photo and Verification */}
           <div className="lg:w-1/4 flex flex-col items-center">
             <div className="relative">
-              {profile?.profilePhoto ? (
-                <img
-                  src={profile.profilePhoto}
-                  alt={farmer.name}
-                  className="w-32 h-32 rounded-full object-cover border-4 border-green-200"
-                  onError={(e) => {
-                    e.target.style.display = 'none';
-                    e.target.nextSibling.style.display = 'flex';
-                  }}
-                />
-              ) : null}
+              {(() => {
+                // Helper to get profile image URL
+                const getProfileImageUrl = () => {
+                  if (!farmer?.profileImage) return null;
+                  if (farmer.profileImage.startsWith('data:')) return farmer.profileImage;
+                  if (farmer.profileImage.startsWith('http://') || farmer.profileImage.startsWith('https://')) {
+                    return farmer.profileImage;
+                  }
+                  return `data:image/jpeg;base64,${farmer.profileImage}`;
+                };
+                const profileImageUrl = getProfileImageUrl();
+                
+                return profileImageUrl ? (
+                  <img
+                    src={profileImageUrl}
+                    alt={farmer.name}
+                    className="w-32 h-32 rounded-full object-cover border-4 border-green-200"
+                    onError={(e) => {
+                      e.target.style.display = 'none';
+                      if (e.target.nextSibling) {
+                        e.target.nextSibling.style.display = 'flex';
+                      }
+                    }}
+                  />
+                ) : null;
+              })()}
               <div 
-                className={`w-32 h-32 bg-green-100 rounded-full flex items-center justify-center border-4 border-green-200 ${profile?.profilePhoto ? 'hidden' : 'flex'}`}
+                className={`w-32 h-32 bg-green-100 rounded-full flex items-center justify-center border-4 border-green-200 ${(() => {
+                  if (!farmer?.profileImage) return 'flex';
+                  const hasValidUrl = farmer.profileImage.startsWith('data:') || 
+                                     farmer.profileImage.startsWith('http://') || 
+                                     farmer.profileImage.startsWith('https://') ||
+                                     farmer.profileImage.length > 0;
+                  return hasValidUrl ? 'hidden' : 'flex';
+                })()}`}
               >
                 <FaLeaf className="text-green-500 text-4xl" />
               </div>

@@ -5,6 +5,23 @@ import { useI18n } from "../context/I18nProvider";
 const FarmerCard = ({ farmer }) => {
   const { t } = useI18n();
 
+  // Helper to get profile image URL
+  const getProfileImageUrl = () => {
+    if (!farmer?.profileImage) return null;
+    // If it already has data: prefix, use it as is
+    if (farmer.profileImage.startsWith('data:')) {
+      return farmer.profileImage;
+    }
+    // If it's a URL (http/https), use it as is
+    if (farmer.profileImage.startsWith('http://') || farmer.profileImage.startsWith('https://')) {
+      return farmer.profileImage;
+    }
+    // Otherwise, assume it's base64 and add the prefix
+    return `data:image/jpeg;base64,${farmer.profileImage}`;
+  };
+
+  const profileImageUrl = getProfileImageUrl();
+
   const getVerificationBadge = () => {
     if (farmer.isVerified) {
       return (
@@ -82,19 +99,21 @@ const FarmerCard = ({ farmer }) => {
         {/* Header with Photo and Basic Info */}
         <div className="flex items-start space-x-4 mb-4">
           <div className="relative">
-            {farmer.profile?.profilePhoto ? (
+            {profileImageUrl ? (
               <img
-                src={farmer.profile.profilePhoto}
+                src={profileImageUrl}
                 alt={farmer.name}
                 className="w-16 h-16 rounded-full object-cover border-2 border-green-200"
                 onError={(e) => {
                   e.target.style.display = 'none';
-                  e.target.nextSibling.style.display = 'flex';
+                  if (e.target.nextSibling) {
+                    e.target.nextSibling.style.display = 'flex';
+                  }
                 }}
               />
             ) : null}
             <div 
-              className={`w-16 h-16 rounded-full bg-green-100 flex items-center justify-center ${farmer.profile?.profilePhoto ? 'hidden' : 'flex'}`}
+              className={`w-16 h-16 rounded-full bg-green-100 flex items-center justify-center border-2 border-green-200 ${profileImageUrl ? 'hidden' : 'flex'}`}
             >
               <FaLeaf className="text-green-500 text-2xl" />
             </div>

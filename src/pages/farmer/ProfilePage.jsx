@@ -64,8 +64,17 @@ const ProfilePage = () => {
         profileImage: user.profileImage || ""
       });
       
+      // Set image preview from user's profileImage
       if (user.profileImage) {
-        setImagePreview(user.profileImage);
+        // If it's already a data URL or HTTP URL, use it directly
+        if (user.profileImage.startsWith('data:') || 
+            user.profileImage.startsWith('http://') || 
+            user.profileImage.startsWith('https://')) {
+          setImagePreview(user.profileImage);
+        } else {
+          // Otherwise, assume it's base64 and add the prefix
+          setImagePreview(`data:image/jpeg;base64,${user.profileImage}`);
+        }
       }
     }
   }, [user]);
@@ -121,7 +130,7 @@ const ProfilePage = () => {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     
     // Basic validation
@@ -133,7 +142,13 @@ const ProfilePage = () => {
     setErrors(newErrors);
     
     if (Object.keys(newErrors).length === 0) {
-      dispatch(updateProfile(formData));
+      try {
+        await dispatch(updateProfile(formData)).unwrap();
+        // Profile updated successfully - the user state will be updated automatically
+        // The image preview will persist since it's already set
+      } catch (error) {
+        console.error("Error updating profile:", error);
+      }
     }
   };
 
@@ -184,25 +199,28 @@ const ProfilePage = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Profile Image Section */}
           <div className="lg:col-span-1">
-            <div className="bg-white rounded-xl shadow-md p-6">
+            <div className="bg-white rounded-xl shadow-md p-6 sticky top-4">
               <h2 className="text-xl font-semibold mb-4">Profile Picture</h2>
               
               <div className="text-center">
-                <div className="relative inline-block">
+                <div className="relative inline-block mb-4">
                   {imagePreview ? (
                     <img
                       src={imagePreview}
                       alt="Profile"
-                      className="w-32 h-32 rounded-full object-cover border-4 border-green-200"
+                      className="w-40 h-40 rounded-full object-cover border-4 border-green-200 shadow-lg"
                     />
                   ) : (
-                    <div className="w-32 h-32 rounded-full bg-green-100 flex items-center justify-center border-4 border-green-200">
-                      <FaUser className="text-green-500 text-4xl" />
+                    <div className="w-40 h-40 rounded-full bg-green-100 flex items-center justify-center border-4 border-green-200 shadow-lg">
+                      <FaUser className="text-green-500 text-5xl" />
                     </div>
                   )}
                   
-                  <label className="absolute bottom-0 right-0 bg-green-500 text-white rounded-full p-2 cursor-pointer hover:bg-green-600 transition-colors">
-                    <FaCamera />
+                  <label 
+                    className="absolute bottom-0 right-0 bg-green-500 text-white rounded-full p-3 cursor-pointer hover:bg-green-600 transition-colors shadow-lg hover:shadow-xl transform hover:scale-110"
+                    title="Click to upload profile picture"
+                  >
+                    <FaCamera className="text-lg" />
                     <input
                       type="file"
                       accept="image/*"
@@ -212,14 +230,33 @@ const ProfilePage = () => {
                   </label>
                 </div>
                 
-                {imagePreview && (
-                  <button
-                    onClick={removeImage}
-                    className="mt-2 text-red-500 hover:text-red-700 text-sm"
-                  >
-                    Remove Image
-                  </button>
-                )}
+                <div className="space-y-2">
+                  <label className="block">
+                    <span className="btn btn-outline w-full cursor-pointer flex items-center justify-center space-x-2">
+                      <FaCamera />
+                      <span>{imagePreview ? "Change Picture" : "Upload Picture"}</span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleImageChange}
+                        className="hidden"
+                      />
+                    </span>
+                  </label>
+                  
+                  {imagePreview && (
+                    <button
+                      onClick={removeImage}
+                      className="w-full text-red-500 hover:text-red-700 text-sm font-medium py-2 border border-red-300 rounded-lg hover:bg-red-50 transition-colors"
+                    >
+                      Remove Image
+                    </button>
+                  )}
+                  
+                  <p className="text-xs text-gray-500 mt-2">
+                    Recommended: Square image, max 5MB
+                  </p>
+                </div>
               </div>
             </div>
           </div>

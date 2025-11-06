@@ -100,3 +100,4 @@ inventorySchema.index({ category: 1 });
 
 export default mongoose.model("Inventory", inventorySchema);
 
+

@@ -128,12 +128,18 @@ export const getAllAdminProducts = async (req, res, next) => {
     
     // Sync AdminProduct.quantity with inventory.availableQuantity (inventory is source of truth)
     for (const product of products) {
-      if (product.inventory && product.quantity !== product.inventory.availableQuantity) {
-        product.quantity = product.inventory.availableQuantity;
-        if (product.quantity === 0) {
-          product.status = "out_of_stock";
+      if (product.inventory) {
+        // Always sync with inventory (inventory is source of truth)
+        const inventoryQty = product.inventory.availableQuantity || 0;
+        if (product.quantity !== inventoryQty) {
+          product.quantity = inventoryQty;
+          if (product.quantity === 0) {
+            product.status = "out_of_stock";
+          } else if (product.status === "out_of_stock" && product.quantity > 0) {
+            product.status = "available";
+          }
+          await product.save();
         }
-        await product.save();
       }
     }
     
@@ -143,7 +149,37 @@ export const getAllAdminProducts = async (req, res, next) => {
       .populate("inventory")
       .sort("-createdAt");
     
-    res.json({ success: true, data: updatedProducts });
+    // Ensure all products have correct quantity from inventory (ALWAYS use inventory as source of truth)
+    const finalProducts = updatedProducts
+      .map((product) => {
+        // Handle both populated and ObjectId inventory references
+        const inventory = product.inventory;
+        if (inventory) {
+          const inventoryQty = inventory.availableQuantity || 0;
+          // ALWAYS override quantity with inventory value for response (inventory is source of truth)
+          const productObj = product.toObject();
+          productObj.quantity = inventoryQty;
+          // Also update status based on inventory quantity
+          if (inventoryQty === 0 && productObj.status !== "out_of_stock") {
+            productObj.status = "out_of_stock";
+          } else if (inventoryQty > 0 && productObj.status === "out_of_stock") {
+            productObj.status = "available";
+          }
+          return productObj;
+        }
+        return product;
+      })
+      // Filter out products with 0 inventory quantity (they shouldn't be in marketplace)
+      .filter((product) => {
+        const inventory = product.inventory;
+        if (inventory) {
+          return (inventory.availableQuantity || 0) > 0;
+        }
+        // If no inventory, check product quantity
+        return (product.quantity || 0) > 0;
+      });
+    
+    res.json({ success: true, data: finalProducts });
   } catch (error) {
     next(error);
   }

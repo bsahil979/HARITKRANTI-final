@@ -33,7 +33,13 @@ const productSchema = new mongoose.Schema(
     
     // Images - support both single imageUrl and multiple images
     imageUrl: { type: String }, // Single image (for backward compatibility)
-    images: { type: [String], default: [] }, // Multiple images
+    images: { type: [String], default: [] }, // Multiple images (URLs/base64 for backward compatibility)
+    // References to Image model (new approach)
+    imageRefs: {
+      type: [mongoose.Schema.Types.ObjectId],
+      ref: "Image",
+      default: [],
+    },
     
     // Farmer reference
     farmerId: { 

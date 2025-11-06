@@ -56,7 +56,8 @@ export const updateProfile = async (req, res, next) => {
       name: req.body.name,
       phone: req.body.phone,
       address: req.body.address,
-      profileImage: req.body.profileImage,
+      profileImage: req.body.profileImage, // Keep for backward compatibility
+      profileImageRef: req.body.profileImageRef, // New Image model reference
       farmDetails: req.body.farmDetails,
       preferences: req.body.preferences,
     };
@@ -70,7 +71,8 @@ export const updateProfile = async (req, res, next) => {
       req.user._id,
       fieldsToUpdate,
       { new: true, runValidators: true }
-    );
+    )
+      .populate("profileImageRef", "url storageType displayUrl");
     
     res.json({
       success: true,
@@ -111,6 +113,7 @@ export const getFarmers = async (req, res, next) => {
   try {
     const farmers = await User.find({ role: "farmer" })
       .select("-password")
+      .populate("profileImageRef", "url storageType displayUrl")
       .sort("-createdAt");
     
     res.json({
@@ -130,7 +133,9 @@ export const getFarmerById = async (req, res, next) => {
     const farmer = await User.findOne({ 
       _id: req.params.id, 
       role: "farmer" 
-    }).select("-password");
+    })
+      .select("-password")
+      .populate("profileImageRef", "url storageType displayUrl");
     
     if (!farmer) {
       return res.status(404).json({

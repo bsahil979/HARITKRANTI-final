@@ -39,32 +39,69 @@ export const createOrder = async (req, res, next) => {
         }
 
         // Get inventory first (source of truth for available quantity)
-        inventory = await Inventory.findById(adminProduct.inventory);
+        // Handle both ObjectId and populated inventory
+        let inventoryData = adminProduct.inventory;
+        
+        // If inventory is populated (object), use it directly
+        // If it's just an ID, fetch it
+        if (inventoryData && typeof inventoryData === 'object' && inventoryData._id) {
+          inventory = inventoryData;
+        } else {
+          const inventoryId = inventoryData || adminProduct.inventory;
+          inventory = await Inventory.findById(inventoryId);
+        }
+        
         if (!inventory) {
+          console.error(`[ORDER] Inventory not found for AdminProduct ${adminProduct._id}, inventory ref:`, adminProduct.inventory);
           return res.status(404).json({
             success: false,
-            message: "Inventory item not found",
+            message: "Inventory item not found for this product",
           });
         }
 
-        // Check quantity against inventory (source of truth) and adminProduct (for consistency)
-        const availableQty = Math.min(
-          inventory.availableQuantity || 0,
-          adminProduct.quantity || 0
-        );
+        // Use ONLY inventory.availableQuantity as source of truth (not Math.min)
+        const availableQty = inventory.availableQuantity || 0;
+        
+        console.log(`[ORDER] Checking quantity for ${adminProduct.name}:`, {
+          adminProductId: adminProduct._id,
+          inventoryId: inventory._id,
+          inventoryAvailableQty: inventory.availableQuantity,
+          adminProductQty: adminProduct.quantity,
+          requestedQty: item.quantity,
+          availableQty: availableQty
+        });
 
         if (item.quantity > availableQty) {
+          console.error(`[ORDER] Quantity check failed:`, {
+            productName: adminProduct.name,
+            requested: item.quantity,
+            available: availableQty,
+            inventoryId: inventory._id,
+            inventoryTotal: inventory.totalQuantity,
+            inventorySold: inventory.soldQuantity,
+            inventoryAvailable: inventory.availableQuantity,
+            adminProductQty: adminProduct.quantity
+          });
           return res.status(400).json({
             success: false,
-            message: `Insufficient quantity for ${adminProduct.name}. Available: ${availableQty} ${adminProduct.unit || inventory.unit || "kg"}`,
+            message: `Insufficient quantity for ${adminProduct.name}. Available: ${availableQty} ${inventory.unit || adminProduct.unit || "kg"}. Inventory ID: ${inventory._id}`,
+            debug: {
+              inventoryId: inventory._id,
+              totalQuantity: inventory.totalQuantity,
+              availableQuantity: inventory.availableQuantity,
+              soldQuantity: inventory.soldQuantity,
+              adminProductQuantity: adminProduct.quantity
+            }
           });
         }
 
-        // Sync adminProduct.quantity with inventory if they're out of sync
+        // Always sync adminProduct.quantity with inventory (inventory is source of truth)
         if (adminProduct.quantity !== inventory.availableQuantity) {
           adminProduct.quantity = inventory.availableQuantity;
           if (adminProduct.quantity === 0) {
             adminProduct.status = "out_of_stock";
+          } else if (adminProduct.status === "out_of_stock" && adminProduct.quantity > 0) {
+            adminProduct.status = "available";
           }
           await adminProduct.save();
         }

@@ -195,3 +195,4 @@ const inventorySlice = createSlice({
 export const { clearInventoryError, resetInventorySuccess } = inventorySlice.actions;
 export default inventorySlice.reducer;
 
+

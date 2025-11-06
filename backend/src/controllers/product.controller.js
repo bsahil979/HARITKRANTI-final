@@ -55,8 +55,9 @@ export const createProduct = async (req, res, next) => {
       status: status || "available",
     });
 
-    await doc.populate("farmerId", "name email phone");
-    await doc.populate("farmer", "name email phone");
+    await doc.populate("farmerId", "name email phone profileImage profileImageRef address");
+    await doc.populate("farmer", "name email phone profileImage profileImageRef address");
+    await doc.populate("imageRefs", "url storageType displayUrl");
     
     res.status(201).json({ success: true, data: doc });
   } catch (err) {
@@ -115,12 +116,13 @@ export const listProducts = async (req, res, next) => {
     }
     
     const skip = (Number(page) - 1) * Number(limit);
-    const query = Product.find(filter)
-      .populate("farmerId", "name email phone")
-      .populate("farmer", "name email phone")
-      .sort(sort)
-      .skip(skip)
-      .limit(Number(limit));
+        const query = Product.find(filter)
+          .populate("farmerId", "name email phone profileImage profileImageRef address")
+          .populate("farmer", "name email phone profileImage profileImageRef address")
+          .populate("imageRefs", "url storageType displayUrl")
+          .sort(sort)
+          .skip(skip)
+          .limit(Number(limit));
     
     const [data, total] = await Promise.all([
       query,
@@ -136,9 +138,10 @@ export const listProducts = async (req, res, next) => {
 export const getProduct = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const doc = await Product.findById(id)
-      .populate("farmerId", "name email phone")
-      .populate("farmer", "name email phone");
+        const doc = await Product.findById(id)
+          .populate("farmerId", "name email phone profileImage profileImageRef address")
+          .populate("farmer", "name email phone profileImage profileImageRef address")
+          .populate("imageRefs", "url storageType displayUrl");
     
     if (!doc) {
       return res.status(404).json({ success: false, message: "Product not found" });
@@ -165,9 +168,10 @@ export const updateProduct = async (req, res, next) => {
       return res.status(403).json({ success: false, message: "Not authorized" });
     }
     
-    const updated = await Product.findByIdAndUpdate(id, req.body, { new: true, runValidators: true })
-      .populate("farmerId", "name email phone")
-      .populate("farmer", "name email phone");
+        const updated = await Product.findByIdAndUpdate(id, req.body, { new: true, runValidators: true })
+          .populate("farmerId", "name email phone profileImage profileImageRef address")
+          .populate("farmer", "name email phone profileImage profileImageRef address")
+          .populate("imageRefs", "url storageType displayUrl");
     
     res.json({ success: true, data: updated });
   } catch (err) {
@@ -203,11 +207,12 @@ export const getFarmerProducts = async (req, res, next) => {
     const filter = { farmerId: req.user._id };
     
     const skip = (Number(page) - 1) * Number(limit);
-    const query = Product.find(filter)
-      .populate("farmerId", "name email phone")
-      .sort("-createdAt")
-      .skip(skip)
-      .limit(Number(limit));
+        const query = Product.find(filter)
+          .populate("farmerId", "name email phone profileImage profileImageRef address")
+          .populate("imageRefs", "url storageType displayUrl")
+          .sort("-createdAt")
+          .skip(skip)
+          .limit(Number(limit));
     
     const [data, total] = await Promise.all([
       query,

@@ -47,6 +47,11 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
+    // Reference to Image model (new approach)
+    profileImageRef: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Image",
+    },
     isActive: {
       type: Boolean,
       default: true,

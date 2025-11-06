@@ -122,3 +122,4 @@ This document describes the complete workflow where farmers add products, admin 
 - Marketplace shows both farmer direct products and admin resold products
 - Admin products are clearly marked in the system
 
+

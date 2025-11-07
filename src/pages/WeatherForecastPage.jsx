@@ -127,79 +127,182 @@ const WeatherForecastPage = () => {
   const readableDate = (iso) => new Date(iso).toLocaleDateString();
 
   return (
-    <div className="container mx-auto px-4 py-24">
-      <h1 className="text-4xl font-bold text-center mb-6">{t("weatherTitle")}</h1>
-      <p className="text-center text-gray-600 mb-10">{t("weatherSubtitle")}</p>
+    <div className="relative min-h-screen overflow-hidden">
+      {/* Background Video */}
+      <video
+        className="absolute inset-0 w-full h-full object-cover z-0"
+        style={{ 
+          filter: 'brightness(1.1) saturate(1.15)',
+        }}
+        autoPlay
+        muted
+        loop
+        playsInline
+        poster="/haritvideo.mp4"
+      >
+        <source src="/haritvideo.mp4" type="video/mp4" />
+      </video>
+      
+      {/* Translucent White Overlay */}
+      <div 
+        className="absolute inset-0 z-10 pointer-events-none"
+        style={{ backgroundColor: 'rgba(255, 255, 255, 0.1)' }}
+        aria-hidden="true"
+      />
 
-      <form onSubmit={onSearch} className="max-w-xl mx-auto mb-10 flex gap-3">
-        <input
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          className="flex-1 border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-emerald-500"
-          placeholder={t("searchPlaceholder")}
-        />
-        <button type="submit" className="btn btn-primary px-6">{t("search")}</button>
-      </form>
+      {/* Content Container */}
+      <div className="relative z-20 container mx-auto px-4 py-24">
+        <h1 
+          className="text-4xl font-bold text-center mb-6 text-gray-900"
+          style={{ textShadow: '2px 2px 8px rgba(255, 255, 255, 0.9), 0 0 12px rgba(255, 255, 255, 0.6)' }}
+        >
+          {t("weatherTitle")}
+        </h1>
+        <p 
+          className="text-center text-gray-800 mb-10 font-medium"
+          style={{ textShadow: '1px 1px 6px rgba(255, 255, 255, 0.9), 0 0 8px rgba(255, 255, 255, 0.5)' }}
+        >
+          {t("weatherSubtitle")}
+        </p>
 
-      <div className="text-center mb-8">
-        <span className="inline-block bg-emerald-50 text-emerald-700 px-4 py-2 rounded-full border border-emerald-200">
-          {t("location")}: {resolvedPlace}
-        </span>
-      </div>
+        <form onSubmit={onSearch} className="max-w-xl mx-auto mb-10 flex gap-3">
+          <input
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            className="flex-1 border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white/98 backdrop-blur-md"
+            style={{ boxShadow: '0 6px 15px rgba(0, 0, 0, 0.15), 0 2px 6px rgba(0, 0, 0, 0.1)' }}
+            placeholder={t("searchPlaceholder")}
+          />
+          <button 
+            type="submit" 
+            className="btn btn-primary px-6"
+            style={{ boxShadow: '0 6px 15px rgba(0, 0, 0, 0.15), 0 2px 6px rgba(0, 0, 0, 0.1)' }}
+          >
+            {t("search")}
+          </button>
+        </form>
 
-      {error && (
-        <div className="max-w-2xl mx-auto mb-6 text-center text-red-600">{error}</div>
-      )}
-
-      {isLoading ? (
-        <div className="text-center py-10">{t("loading")}</div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
-          {daily.map((d, idx) => (
-            <div key={idx} className="glass p-6 rounded-2xl text-center transition-all duration-300 shadow-lg hover:shadow-xl">
-              <div className="mb-4">{iconForCode(d.code)}</div>
-              <h3 className="text-xl font-semibold mb-2">{idx === 0 ? t("today") : new Date(d.date).toLocaleDateString(lang === "hi" ? "hi-IN" : "en-US", { weekday: "long" })}</h3>
-              <p className="text-sm text-gray-500 mb-2">{readableDate(d.date)}</p>
-              <p className="text-2xl font-bold text-gray-800 mb-2">{Math.round(d.max)}° / {Math.round(d.min)}°C</p>
-              <p className="text-gray-600">Rain: {Math.round(d.rain)} mm</p>
-            </div>
-          ))}
+        <div className="text-center mb-8">
+          <span 
+            className="inline-block bg-white/98 text-emerald-700 px-4 py-2 rounded-full border border-emerald-200 backdrop-blur-md"
+            style={{ boxShadow: '0 6px 15px rgba(0, 0, 0, 0.15), 0 2px 6px rgba(0, 0, 0, 0.1)' }}
+          >
+            {t("location")}: {resolvedPlace}
+          </span>
         </div>
-      )}
 
-      {/* Simplified key metrics without charts */}
-      {hourly.time.length > 0 && (
-        <div className="mt-8 max-w-3xl mx-auto">
-          <div className="p-5 rounded-xl border border-gray-200 bg-white/70">
-            <h3 className="font-semibold mb-3">Key Metrics (next 24h averages)</h3>
-            <MetricsSnapshot time={hourly.time} humidity={hourly.humidity} wind={hourly.wind} soil={hourly.soil} />
+        {error && (
+          <div 
+            className="max-w-2xl mx-auto mb-6 text-center text-red-600 bg-white/98 backdrop-blur-md px-4 py-2 rounded-lg"
+            style={{ boxShadow: '0 6px 15px rgba(0, 0, 0, 0.15), 0 2px 6px rgba(0, 0, 0, 0.1)' }}
+          >
+            {error}
           </div>
-        </div>
-      )}
+        )}
 
-      <div className="mt-16">
-        <h2 className="text-2xl font-bold mb-4 text-center">Farming Guidance</h2>
-        <div className="max-w-3xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
-          {daily.slice(0, 3).map((d, idx) => {
-            const highHeat = d.max >= 34;
-            const wet = d.rain >= 5;
-            const guidance = [
-              highHeat ? "Irrigate early morning or late evening to reduce evap losses." : "Maintain regular irrigation schedule.",
-              wet ? "Plan harvesting/field work on lower-rain days; improve drainage." : "Suitable for most field operations.",
-              wet ? "Monitor for fungal disease; consider preventive fungicide if advised locally." : "Low disease pressure expected; continue routine scouting.",
-            ];
-            return (
-              <div key={idx} className="p-5 rounded-xl border border-gray-200 bg-white/70">
-                <div className="font-semibold mb-1">{idx === 0 ? t("today") : new Date(d.date).toLocaleDateString(lang === "hi" ? "hi-IN" : "en-US", { weekday: "long" })}</div>
-                <div className="text-sm text-gray-600 mb-3">{readableDate(d.date)} • Max {Math.round(d.max)}°C • Rain {Math.round(d.rain)} mm</div>
-                <ul className="list-disc list-inside text-sm text-gray-700 space-y-1">
-                  {guidance.map((g, i) => (
-                    <li key={i}>{g}</li>
-                  ))}
-                </ul>
+        {isLoading ? (
+          <div 
+            className="text-center py-10 bg-white/98 backdrop-blur-md rounded-lg max-w-md mx-auto"
+            style={{ boxShadow: '0 6px 15px rgba(0, 0, 0, 0.15), 0 2px 6px rgba(0, 0, 0, 0.1)' }}
+          >
+            {t("loading")}
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+            {daily.map((d, idx) => (
+              <div 
+                key={idx} 
+                className="glass p-6 rounded-2xl text-center transition-all duration-300 bg-white/98 backdrop-blur-md border border-white/60"
+                style={{ 
+                  boxShadow: '0 10px 25px rgba(0, 0, 0, 0.15), 0 4px 10px rgba(0, 0, 0, 0.1)',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.boxShadow = '0 15px 35px rgba(0, 0, 0, 0.2), 0 6px 15px rgba(0, 0, 0, 0.15)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.boxShadow = '0 10px 25px rgba(0, 0, 0, 0.15), 0 4px 10px rgba(0, 0, 0, 0.1)';
+                }}
+              >
+                <div className="mb-4">{iconForCode(d.code)}</div>
+                <h3 
+                  className="text-xl font-semibold mb-2 text-gray-800"
+                  style={{ textShadow: '1px 1px 4px rgba(255, 255, 255, 0.8)' }}
+                >
+                  {idx === 0 ? t("today") : new Date(d.date).toLocaleDateString(lang === "hi" ? "hi-IN" : "en-US", { weekday: "long" })}
+                </h3>
+                <p className="text-sm text-gray-600 mb-2">{readableDate(d.date)}</p>
+                <p 
+                  className="text-2xl font-bold text-gray-900 mb-2"
+                  style={{ textShadow: '1px 1px 4px rgba(255, 255, 255, 0.8)' }}
+                >
+                  {Math.round(d.max)}° / {Math.round(d.min)}°C
+                </p>
+                <p className="text-gray-700 font-medium">Rain: {Math.round(d.rain)} mm</p>
               </div>
-            );
-          })}
+            ))}
+          </div>
+        )}
+
+        {/* Simplified key metrics without charts */}
+        {hourly.time.length > 0 && (
+          <div className="mt-8 max-w-3xl mx-auto">
+            <div 
+              className="p-5 rounded-xl border border-gray-200 bg-white/98 backdrop-blur-md"
+              style={{ 
+                boxShadow: '0 10px 25px rgba(0, 0, 0, 0.15), 0 4px 10px rgba(0, 0, 0, 0.1)',
+              }}
+            >
+              <h3 
+                className="font-semibold mb-3 text-gray-800"
+                style={{ textShadow: '1px 1px 4px rgba(255, 255, 255, 0.8)' }}
+              >
+                Key Metrics (next 24h averages)
+              </h3>
+              <MetricsSnapshot time={hourly.time} humidity={hourly.humidity} wind={hourly.wind} soil={hourly.soil} />
+            </div>
+          </div>
+        )}
+
+        <div className="mt-16">
+          <h2 
+            className="text-2xl font-bold mb-4 text-center text-gray-900"
+            style={{ textShadow: '2px 2px 8px rgba(255, 255, 255, 0.9), 0 0 12px rgba(255, 255, 255, 0.6)' }}
+          >
+            Farming Guidance
+          </h2>
+          <div className="max-w-3xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
+            {daily.slice(0, 3).map((d, idx) => {
+              const highHeat = d.max >= 34;
+              const wet = d.rain >= 5;
+              const guidance = [
+                highHeat ? "Irrigate early morning or late evening to reduce evap losses." : "Maintain regular irrigation schedule.",
+                wet ? "Plan harvesting/field work on lower-rain days; improve drainage." : "Suitable for most field operations.",
+                wet ? "Monitor for fungal disease; consider preventive fungicide if advised locally." : "Low disease pressure expected; continue routine scouting.",
+              ];
+              return (
+                <div 
+                  key={idx} 
+                  className="p-5 rounded-xl border border-gray-200 bg-white/98 backdrop-blur-md"
+                  style={{ 
+                    boxShadow: '0 10px 25px rgba(0, 0, 0, 0.15), 0 4px 10px rgba(0, 0, 0, 0.1)',
+                  }}
+                >
+                  <div 
+                    className="font-semibold mb-1 text-gray-800"
+                    style={{ textShadow: '1px 1px 4px rgba(255, 255, 255, 0.8)' }}
+                  >
+                    {idx === 0 ? t("today") : new Date(d.date).toLocaleDateString(lang === "hi" ? "hi-IN" : "en-US", { weekday: "long" })}
+                  </div>
+                  <div className="text-sm text-gray-600 mb-3">{readableDate(d.date)} • Max {Math.round(d.max)}°C • Rain {Math.round(d.rain)} mm</div>
+                  <ul className="list-disc list-inside text-sm text-gray-800 space-y-1">
+                    {guidance.map((g, i) => (
+                      <li key={i}>{g}</li>
+                    ))}
+                  </ul>
+                </div>
+              );
+            })}
+          </div>
         </div>
       </div>
     </div>
@@ -220,17 +323,26 @@ function MetricsSnapshot({ time, humidity, wind, soil }) {
   const avgSoil = toAvg(soil);
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
-      <div className="p-4 rounded-lg border border-gray-200">
-        <div className="text-sm text-gray-500">Humidity (avg 24h)</div>
-        <div className="text-2xl font-semibold">{avgHumidity}%</div>
+      <div 
+        className="p-4 rounded-lg border border-gray-200 bg-white/95 backdrop-blur-md"
+        style={{ boxShadow: '0 6px 15px rgba(0, 0, 0, 0.15), 0 2px 6px rgba(0, 0, 0, 0.1)' }}
+      >
+        <div className="text-sm text-gray-600 font-medium">Humidity (avg 24h)</div>
+        <div className="text-2xl font-semibold text-gray-900">{avgHumidity}%</div>
       </div>
-      <div className="p-4 rounded-lg border border-gray-200">
-        <div className="text-sm text-gray-500">Wind Speed (avg 24h)</div>
-        <div className="text-2xl font-semibold">{avgWind} m/s</div>
+      <div 
+        className="p-4 rounded-lg border border-gray-200 bg-white/95 backdrop-blur-md"
+        style={{ boxShadow: '0 6px 15px rgba(0, 0, 0, 0.15), 0 2px 6px rgba(0, 0, 0, 0.1)' }}
+      >
+        <div className="text-sm text-gray-600 font-medium">Wind Speed (avg 24h)</div>
+        <div className="text-2xl font-semibold text-gray-900">{avgWind} m/s</div>
       </div>
-      <div className="p-4 rounded-lg border border-gray-200">
-        <div className="text-sm text-gray-500">Soil Moisture 0-7cm (avg 24h)</div>
-        <div className="text-2xl font-semibold">{avgSoil}</div>
+      <div 
+        className="p-4 rounded-lg border border-gray-200 bg-white/95 backdrop-blur-md"
+        style={{ boxShadow: '0 6px 15px rgba(0, 0, 0, 0.15), 0 2px 6px rgba(0, 0, 0, 0.1)' }}
+      >
+        <div className="text-sm text-gray-600 font-medium">Soil Moisture 0-7cm (avg 24h)</div>
+        <div className="text-2xl font-semibold text-gray-900">{avgSoil}</div>
       </div>
     </div>
   );

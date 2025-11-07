@@ -7,7 +7,7 @@ const API_URL = import.meta.env.VITE_API_URL;
 
 export const getProducts = createAsyncThunk(
   "products/getProducts",
-  async (params = {}, { rejectWithValue }) => {
+  async (params = {}, { rejectWithValue, getState }) => {
     try {
       let url = `${API_URL}/products`;
 
@@ -21,8 +21,16 @@ export const getProducts = createAsyncThunk(
         url += `?${queryParams.toString()}`;
       }
 
+      // Include auth token if available (so admin can see all products including pending)
+      const token = getState().auth?.token;
+      const config = token ? {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      } : {};
+
       console.log("Fetching products from API:", url);
-      const { data } = await axios.get(url);
+      const { data } = await axios.get(url, config);
       console.log("Products API response:", data);
       return data;
     } catch (error) {

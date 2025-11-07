@@ -97,3 +97,4 @@ The **Categories section** is for:
 It's essentially a **content management tool** for organizing the product catalog.
 
 
+

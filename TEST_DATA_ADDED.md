@@ -132,3 +132,4 @@ node scripts/addTestProducts.js
 The script is idempotent - it won't create duplicates, but will create new items if they don't exist.
 
 
+

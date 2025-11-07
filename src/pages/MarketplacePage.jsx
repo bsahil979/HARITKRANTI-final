@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { getProducts } from "../redux/slices/productSlice";
 import { getAdminProducts } from "../redux/slices/inventorySlice";
 import ProductCard from "../components/ProductCard";
 import Loader from "../components/Loader";
@@ -10,7 +9,6 @@ import { FaStore, FaSeedling } from "react-icons/fa";
 
 const MarketplacePage = () => {
   const dispatch = useDispatch();
-  const { products = [], loading: productsLoading } = useSelector((state) => state.products || {});
   const { adminProducts = [], loading: adminLoading } = useSelector((state) => state.inventory || {});
 
   // UI state
@@ -19,19 +17,13 @@ const MarketplacePage = () => {
   const [sort, setSort] = useState("newest");
 
   useEffect(() => {
-    dispatch(getProducts());
+    // Only fetch admin products for marketplace - farmer products should NOT be visible to customers
     dispatch(getAdminProducts({ status: "available" }));
   }, [dispatch]);
 
-  // Combine farmer products and admin products
+  // Only show admin products (direct marketplace) - NO farmer products
   const allProducts = useMemo(() => {
-    const farmerProducts = (products || []).map((p) => ({
-      ...p,
-      isAdminProduct: false,
-      seller: p.farmer || p.farmerId,
-      sellerType: "farmer",
-    }));
-
+    // Only map admin products - these are products purchased by admin and listed in marketplace
     const adminProds = (adminProducts || []).map((p) => ({
       ...p,
       _id: p._id,
@@ -49,11 +41,13 @@ const MarketplacePage = () => {
       isAdminProduct: true,
       seller: p.admin,
       sellerType: "admin",
-      farmer: p.admin, // For compatibility with ProductCard
+      // Don't show farmer info - customers shouldn't see farmer names
+      farmer: null,
+      farmerId: null,
     }));
 
-    return [...farmerProducts, ...adminProds];
-  }, [products, adminProducts]);
+    return adminProds;
+  }, [adminProducts]);
 
   // derive categories from products to populate the category dropdown
   const categories = useMemo(() => {
@@ -76,12 +70,11 @@ const MarketplacePage = () => {
       });
     }
 
-    // filter by search (name, farmer, or description)
+    // filter by search (name or description only - no farmer names)
     if (search.trim()) {
       const q = search.toLowerCase();
       arr = arr.filter((p) =>
         (p.name || "").toLowerCase().includes(q) ||
-        (p.farmer || "").toLowerCase().includes(q) ||
         (p.description || "").toLowerCase().includes(q)
       );
     }
@@ -105,7 +98,7 @@ const MarketplacePage = () => {
     return arr;
   }, [allProducts, search, category, sort]);
 
-  if (productsLoading || adminLoading) {
+  if (adminLoading) {
     return <Loader />;
   }
 
@@ -115,7 +108,7 @@ const MarketplacePage = () => {
         <FaStore className="text-green-500 text-5xl mx-auto mb-4" />
         <h1 className="text-4xl font-bold mb-2">Direct Marketplace</h1>
         <p className="text-lg text-gray-600">
-          Connect directly with farmers and buy fresh fruits and vegetables at fair prices.
+          Shop fresh fruits and vegetables from our curated marketplace at fair prices.
         </p>
       </div>
 
@@ -123,7 +116,7 @@ const MarketplacePage = () => {
       <div className="flex flex-col md:flex-row gap-3 items-stretch md:items-center mb-8">
         <input
           type="text"
-          placeholder="Search products, farmer or description..."
+          placeholder="Search products or description..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="flex-1 border rounded-md px-4 py-2 shadow-sm"

@@ -103,9 +103,23 @@ export const listProducts = async (req, res, next) => {
     // Admin can see all products (including pending/unlisted)
     const isAdmin = req.user && req.user.role === "admin";
     if (!isAdmin) {
-      filter.isListed = true; // Only show approved/listed products in marketplace
+      // Show products that are either:
+      // 1. Explicitly listed (isListed: true), OR
+      // 2. Don't have isListed field set (backward compatibility for existing products)
+      filter.$or = [
+        { isListed: true },
+        { isListed: { $exists: false } } // Backward compatibility: show products without isListed field
+      ];
       if (!status) {
-        filter.status = "available"; // Only show available products (unless status filter is explicitly set)
+        // Show available products, or products without status field (backward compatibility)
+        filter.$and = [
+          {
+            $or: [
+              { status: "available" },
+              { status: { $exists: false } }
+            ]
+          }
+        ];
       }
     }
     

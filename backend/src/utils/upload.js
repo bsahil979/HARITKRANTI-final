@@ -14,7 +14,11 @@ export function configureCloudinary() {
 }
 
 // Multer memory storage to stream file to Cloudinary
-export const upload = multer({ storage: multer.memoryStorage() });
+// Set file size limit to 10MB per file
+export const upload = multer({ 
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 10 * 1024 * 1024 } // 10MB limit
+});
 
 export async function uploadBufferToCloudinary(buffer, filename, folder = "products") {
   const cloud = configureCloudinary();

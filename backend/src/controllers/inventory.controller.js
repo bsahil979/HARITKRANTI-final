@@ -118,8 +118,18 @@ export const listProductInMarketplace = async (req, res, next) => {
 // Get all admin products (for marketplace)
 export const getAllAdminProducts = async (req, res, next) => {
   try {
-    const { status = "available" } = req.query;
-    const filter = { isAdminProduct: true, status };
+    const { status } = req.query;
+    // Build filter - show available products by default, or filter by requested status
+    const filter = {};
+    if (status && status !== "all") {
+      filter.status = status;
+    } else {
+      // Default: show available products (or products that should be available)
+      filter.$or = [
+        { status: "available" },
+        { status: { $exists: false } } // Backward compatibility
+      ];
+    }
     
     const products = await AdminProduct.find(filter)
       .populate("admin", "name")
@@ -143,7 +153,7 @@ export const getAllAdminProducts = async (req, res, next) => {
       }
     }
     
-    // Re-fetch to get updated quantities
+    // Re-fetch to get updated quantities (use same filter)
     const updatedProducts = await AdminProduct.find(filter)
       .populate("admin", "name")
       .populate("inventory")

@@ -79,7 +79,7 @@ function App() {
           <Route path="register" element={<RegisterPage />} />
           <Route path="select-role" element={<RoleSelectionPage />} />
           <Route path="weather-forecast" element={<WeatherForecastPage />} />
-          <Route path="marketplace" element={<ProductsPage />} />
+          <Route path="marketplace" element={<MarketplacePage />} />
           <Route path="cart" element={<CartPage />} />
           <Route path="crop-recommendation" element={<CropRecommendationPage />} />
           <Route path="guidance" element={<GuidancePage />} />

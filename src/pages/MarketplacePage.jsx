@@ -17,11 +17,13 @@ const MarketplacePage = () => {
   const [sort, setSort] = useState("newest");
 
   useEffect(() => {
-    // Only fetch admin products for marketplace - farmer products should NOT be visible to customers
+    // Fetch admin products for marketplace - visible to customers and farmers
+    // Farmer products are NOT shown here - only admin's direct marketplace products
     dispatch(getAdminProducts({ status: "available" }));
   }, [dispatch]);
 
-  // Only show admin products (direct marketplace) - NO farmer products
+  // Only show admin products (direct marketplace) - visible to all users (customers, farmers, admin)
+  // NO farmer products shown - customers and farmers should not see farmer names
   const allProducts = useMemo(() => {
     // Only map admin products - these are products purchased by admin and listed in marketplace
     const adminProds = (adminProducts || []).map((p) => ({

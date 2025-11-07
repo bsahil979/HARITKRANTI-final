@@ -17,6 +17,7 @@ import {
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [isLangOpen, setIsLangOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
 
   const dispatch = useDispatch();
@@ -39,12 +40,27 @@ const Navbar = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (isLangOpen && !event.target.closest('.language-dropdown')) {
+        setIsLangOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [isLangOpen]);
+
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
 
   const toggleProfile = () => {
     setIsProfileOpen(!isProfileOpen);
+  };
+
+  const toggleLang = () => {
+    setIsLangOpen(!isLangOpen);
   };
 
   const handleLogout = () => {
@@ -87,24 +103,91 @@ const Navbar = () => {
               {t("about")}
             </Link>
 
-            <div className="relative">
-              <select
-                value={lang}
-                onChange={(e) => setLang(e.target.value)}
-                className={`px-2 py-1 text-sm rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500 ${isHomePage && !isScrolled ? 'bg-white/20 text-white border-white/30' : 'bg-gray-100 text-gray-700'}`}
+            <div className="relative language-dropdown">
+              <button
+                onClick={toggleLang}
+                className={`px-3 py-1.5 text-sm rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500 flex items-center space-x-1 ${isHomePage && !isScrolled ? 'bg-white/20 text-white border border-white/30 hover:bg-white/30' : 'bg-gray-100 text-gray-700 border border-gray-300 hover:bg-gray-200'}`}
                 aria-label="Select language"
               >
-                <option value="en">English</option>
-                <option value="hi">हिंदी</option>
-                <option value="mr">मराठी</option>
-                <option value="te">తెలుగు</option>
-                <option value="ta">தமிழ்</option>
-                <option value="kn">ಕನ್ನಡ</option>
-                <option value="gu">ગુજરાતી</option>
-                <option value="bn">বাংলা</option>
-                <option value="pa">ਪੰਜਾਬੀ</option>
-                <option value="or">ଓଡ଼ିଆ</option>
-              </select>
+                <span>
+                  {lang === "en" && "English"}
+                  {lang === "hi" && "हिंदी"}
+                  {lang === "mr" && "मराठी"}
+                  {lang === "te" && "తెలుగు"}
+                  {lang === "ta" && "தமிழ்"}
+                  {lang === "kn" && "ಕನ್ನಡ"}
+                  {lang === "gu" && "ગુજરાતી"}
+                  {lang === "bn" && "বাংলা"}
+                  {lang === "pa" && "ਪੰਜਾਬੀ"}
+                  {lang === "or" && "ଓଡ଼ିଆ"}
+                </span>
+                <span className="text-xs">▼</span>
+              </button>
+
+              {isLangOpen && (
+                <div className="absolute right-0 mt-2 w-40 bg-white/20 backdrop-blur-lg rounded-md shadow-xl py-1 z-50 border border-white/20 max-h-80 overflow-y-auto">
+                  <button
+                    onClick={() => { setLang("en"); setIsLangOpen(false); }}
+                    className={`block w-full text-left px-4 py-2 text-sm hover:bg-emerald-500/20 hover:text-white transition-colors ${lang === "en" ? "bg-emerald-500/30 text-white font-medium" : "text-white"}`}
+                  >
+                    English
+                  </button>
+                  <button
+                    onClick={() => { setLang("hi"); setIsLangOpen(false); }}
+                    className={`block w-full text-left px-4 py-2 text-sm hover:bg-emerald-500/20 hover:text-white transition-colors ${lang === "hi" ? "bg-emerald-500/30 text-white font-medium" : "text-white"}`}
+                  >
+                    हिंदी
+                  </button>
+                  <button
+                    onClick={() => { setLang("mr"); setIsLangOpen(false); }}
+                    className={`block w-full text-left px-4 py-2 text-sm hover:bg-emerald-500/20 hover:text-white transition-colors ${lang === "mr" ? "bg-emerald-500/30 text-white font-medium" : "text-white"}`}
+                  >
+                    मराठी
+                  </button>
+                  <button
+                    onClick={() => { setLang("te"); setIsLangOpen(false); }}
+                    className={`block w-full text-left px-4 py-2 text-sm hover:bg-emerald-500/20 hover:text-white transition-colors ${lang === "te" ? "bg-emerald-500/30 text-white font-medium" : "text-white"}`}
+                  >
+                    తెలుగు
+                  </button>
+                  <button
+                    onClick={() => { setLang("ta"); setIsLangOpen(false); }}
+                    className={`block w-full text-left px-4 py-2 text-sm hover:bg-emerald-500/20 hover:text-white transition-colors ${lang === "ta" ? "bg-emerald-500/30 text-white font-medium" : "text-white"}`}
+                  >
+                    தமிழ்
+                  </button>
+                  <button
+                    onClick={() => { setLang("kn"); setIsLangOpen(false); }}
+                    className={`block w-full text-left px-4 py-2 text-sm hover:bg-emerald-500/20 hover:text-white transition-colors ${lang === "kn" ? "bg-emerald-500/30 text-white font-medium" : "text-white"}`}
+                  >
+                    ಕನ್ನಡ
+                  </button>
+                  <button
+                    onClick={() => { setLang("gu"); setIsLangOpen(false); }}
+                    className={`block w-full text-left px-4 py-2 text-sm hover:bg-emerald-500/20 hover:text-white transition-colors ${lang === "gu" ? "bg-emerald-500/30 text-white font-medium" : "text-white"}`}
+                  >
+                    ગુજરાતી
+                  </button>
+                  <button
+                    onClick={() => { setLang("bn"); setIsLangOpen(false); }}
+                    className={`block w-full text-left px-4 py-2 text-sm hover:bg-emerald-500/20 hover:text-white transition-colors ${lang === "bn" ? "bg-emerald-500/30 text-white font-medium" : "text-white"}`}
+                  >
+                    বাংলা
+                  </button>
+                  <button
+                    onClick={() => { setLang("pa"); setIsLangOpen(false); }}
+                    className={`block w-full text-left px-4 py-2 text-sm hover:bg-emerald-500/20 hover:text-white transition-colors ${lang === "pa" ? "bg-emerald-500/30 text-white font-medium" : "text-white"}`}
+                  >
+                    ਪੰਜਾਬੀ
+                  </button>
+                  <button
+                    onClick={() => { setLang("or"); setIsLangOpen(false); }}
+                    className={`block w-full text-left px-4 py-2 text-sm hover:bg-emerald-500/20 hover:text-white transition-colors ${lang === "or" ? "bg-emerald-500/30 text-white font-medium" : "text-white"}`}
+                  >
+                    ଓଡ଼ିଆ
+                  </button>
+                </div>
+              )}
             </div>
 
             {isAuthenticated && user?.role === "consumer" && (

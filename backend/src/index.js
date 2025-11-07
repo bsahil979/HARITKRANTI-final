@@ -17,7 +17,11 @@ import categoryRouter from "./routes/category.routes.js";
 import { errorHandler, notFound } from "./middleware/error.js";
 
 const app = express();
-app.use(cors({ origin: true, credentials: true }));
+// CORS configuration - allow frontend URL from environment or default to all origins
+const allowedOrigins = process.env.FRONTEND_URL 
+  ? [process.env.FRONTEND_URL, 'http://localhost:5173']
+  : true; // Allow all origins in development
+app.use(cors({ origin: allowedOrigins, credentials: true }));
 // Increase body size limit to handle images and large payloads (50MB)
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));

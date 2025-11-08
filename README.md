@@ -1,48 +1,40 @@
 # 🌱 HaritKranti - Smart Agriculture & Farmer Marketplace
 
-**Frontend Application**
+**Full Stack MERN Application**
 
-HaritKranti is a comprehensive smart agriculture platform that empowers farmers with technology and connects them directly with consumers through an intelligent marketplace.
+HaritKranti is a comprehensive smart agriculture platform that empowers farmers with technology and connects them directly with consumers through an intelligent digital marketplace.  
+It integrates real-time weather, crop recommendation, and marketplace features into one seamless ecosystem.
+
+---
 
 ## 🚀 Features
 
 ### 🌾 Smart Agriculture
-- **Crop Guidance**: Scientific farming recommendations based on soil type, season, and weather conditions
-- **Weather Forecasting**: Real-time weather updates with pest and disease alerts
-- **Expert Support**: Access to agriculture experts and community forums
+- **Crop Guidance:** Scientific crop recommendations based on soil type, season, and weather conditions  
+- **Weather Forecasting:** Real-time weather updates with pest and disease alerts  
+- **Multilingual Language Support:** Accessible interface available in multiple regional languages  
 
 ### 🏪 Marketplace
-- **Direct Trading**: Farmers can list crops directly to buyers, eliminating middlemen
-- **Order Management**: Efficient order tracking and management system
-- **Fair Pricing**: Transparent pricing ensuring fair compensation for farmers
+- **Direct Trading:** Farmers can list crops directly for buyers, eliminating middlemen  
+- **Order Management:** Simple and efficient system to track and manage orders  
+- **Fair Pricing:** Transparent pricing ensures fair income for farmers  
 
 ### 👥 User Management
-- **Multi-Role System**: Support for farmers, consumers, and administrators
-- **Profile Management**: Comprehensive user profiles with farm details and preferences
-- **Communication**: Direct farmer-to-buyer and farmer-to-farmer messaging
+- **Multi-Role System:** Supports different user roles — Farmer, Consumer, and Admin  
+- **Profile Management:** Manage user profiles, farm details, and preferences  
+- **Communication:** Direct farmer-to-buyer and farmer-to-farmer messaging system  
 
-### 📱 Technology Features
-- **Responsive Design**: Mobile-first design for accessibility
-- **Real-time Updates**: Live data for weather, orders, and communications
-- **Modern UI/UX**: Clean, intuitive interface with accessibility features
-
-## 🛠️ Tech Stack
-
-- **Frontend Framework**: React 18 with Vite
-- **State Management**: Redux Toolkit
-- **Styling**: Tailwind CSS
-- **Routing**: React Router DOM
-- **Icons**: React Icons (Font Awesome)
-- **Notifications**: React Toastify
-- **HTTP Client**: Axios
-
+### 💻 Technology Features
+- **Real-time Updates:** Live data for weather, orders, and communication  
+- **Modern UI/UX:** Clean and accessible design using Tailwind CSS and grid-based layout  
+- **Secure Authentication:** JWT-based login system with role validation 
 ## 📦 Installation
 
 1. **Clone the repository**
    ```bash
    git clone <repository-url>
-   cd haritkranti-frontend
-   ```
+   cd HaritKranti
+
 
 2. **Install dependencies**
    ```bash
@@ -58,6 +50,12 @@ HaritKranti is a comprehensive smart agriculture platform that empowers farmers 
    ```bash
    npm run build
    ```
+
+5. **Navigate to the backend folder**
+   ```bash
+   cd backend
+   npm run start
+
 
 ## 🏗️ Project Structure
 
@@ -77,60 +75,75 @@ src/
 
 ## 🎯 Key Components
 
-- **Smart Navbar**: Dynamic navigation based on user roles
-- **Responsive Layout**: Mobile-friendly design system
-- **Role-based Routing**: Different interfaces for farmers, consumers, and admins
-- **Real-time Messaging**: Direct communication between users
-- **Order Management**: Complete order lifecycle tracking
+- **Smart Navbar:** Dynamic navigation based on user roles  
+- **Responsive Layout:** Grid-based adaptive layout system  
+- **Role-based Routing:** Different interfaces for farmers, consumers, and admins  
+- **Real-time Messaging:** Direct communication between users  
+- **Order Management:** Complete order lifecycle tracking  
+
+---
 
 ## 🌟 User Roles
 
 ### 🧑‍🌾 Farmers
-- Create and manage farm profiles
-- List crops and products
-- Receive crop guidance and weather alerts
-- Manage orders and communicate with buyers
-- Access farming community and expert advice
+- Create and manage farm profiles  
+- List crops and products  
+- Receive crop guidance and weather alerts  
+- Manage orders and communicate with buyers  
+- Access farming community and crop insights  
 
 ### 🛒 Consumers
-- Browse local farmers and products
-- Place orders directly with farmers
-- Access fresh produce information
-- Communicate with farmers
-- Track order status
+- Browse local farmers and products  
+- Place orders directly with farmers  
+- Access fresh produce information  
+- Communicate with farmers  
+- Track order status  
 
 ### 👨‍💼 Administrators
-- Manage platform users
-- Oversee marketplace activities
-- Monitor system analytics
-- Moderate content and communications
+- Manage platform users  
+- Oversee marketplace activities  
+- Monitor system analytics  
+- Moderate content and communications  
 
+---
 ## 🔧 Configuration
 
-The application is configured to work as a frontend-only solution. Update API endpoints in the Redux slices to connect with your backend service.
+The project is fully integrated with **both frontend and backend**.  
+All backend services (authentication, crop management, weather data, and communication) are connected via secure REST APIs hosted on **MongoDB Atlas** and deployed using **Render**
 
 ## 🎨 Design System
 
-- **Primary Colors**: Green palette representing agriculture and growth
-- **Typography**: Poppins font family for modern readability
-- **Icons**: Seedling and agriculture-themed icons
-- **Layout**: Clean, card-based design with proper spacing
+- **Primary Colors:** Shades of green representing agriculture, growth, and sustainability  
+- **Typography:** Poppins font family for modern and clean readability  
+- **Icons:** Agriculture and sustainability-themed icons integrated using React Icons  
+- **Layout:** Card-based structure with balanced spacing, clear hierarchy, and consistent alignment  
+- **UI Framework:** Tailwind CSS for fast, responsive, and utility-first design  
 
-## 📱 Responsive Design
+---
 
-- Mobile-first approach
-- Tablet and desktop optimized
-- Touch-friendly interface
-- Accessible navigation
+## 💻 Responsive Interface
+
+- Grid-based adaptive design for all screen sizes  
+- Optimized for desktop, tablet, and mobile browsers  
+- Accessible color contrast and typography for improved readability  
+- Smooth and intuitive navigation flow across all user roles  
+
+---
 
 ## 🚀 Deployment
 
-The application can be deployed to various platforms:
+The **HaritKranti** project is deployed and accessible online for production use.
 
-- **Vercel**: Zero-configuration deployment
-- **Netlify**: Static site hosting
-- **GitHub Pages**: Free hosting for static sites
-- **Custom Server**: Build and serve static files
+**Build & Run Commands:**
+```bash
+# Start the frontend
+cd HaritKranti
+npm run dev
+
+# Start the backend
+cd backend
+npm run start
+
 
 ## 🤝 Contributing
 
